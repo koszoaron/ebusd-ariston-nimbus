@@ -1,0 +1,95 @@
+# Human-readable labels for the generated config (HA entity names). Keyed "device id".
+# Edit freely; scripts/gen_config.py uses the label as the field comment, which mqtt-hassio.cfg
+# turns into the entity name. Sensys menu numbers are given where the value is shown there.
+# Optional "name" overrides the technical field name (and so the MQTT topic and unique id).
+
+energymgr 0081: {label: "Zone 1 temperature range"}                           # 4.2.0
+energymgr 0120: {label: "Heating enabled"}
+energymgr c194: {label: "Zone 1 mode state"}                                  # M3, hypothesis; same names as c679
+energymgr 0191: {label: "Zone 1 heat request"}                                # 4.3.4
+energymgr 0320: {label: "Quiet mode enabled"}                                 # 17.0.1
+energymgr 0520: {label: "Automatic thermoregulation"}                         # 17.2.1
+energymgr 0781: {label: "Zone 1 automatic winter mode"}                       # 4.1.0
+energymgr 1803: {label: "AUX output 1"}                                       # 17.15.8
+energymgr 1b23: {label: "Buffer enabled"}                                     # 20.0.0
+energymgr 1b45: {label: "Buffer charge request"}                              # 20.1.3
+energymgr 1c11: {label: "HV input 2 state", name: hv_input_2_status}          # 17.14.7
+energymgr 1c22: {label: "CH mode"}                                            # 17.0.0
+energymgr 1d11: {label: "HV input 1 state", name: hv_input_1_status}          # 17.14.6
+energymgr 1e11: {label: "AUX input 1 state"}                                  # 17.14.9
+energymgr 1f11: {label: "HV input 3 state", name: hv_input_3_status}          # 17.14.8
+energymgr 1f23: {label: "Buffer setpoint mode"}                               # 20.0.7
+energymgr 40d1: {label: "Compressor running hours"}                           # 17.9.0
+energymgr 40d8: {label: "Compressor starts"}                                  # 17.9.1
+energymgr 47d1: {label: "Defrost hours"}                                      # 17.9.6
+energymgr 52d9: {label: "Heat pump energy consumed"}
+energymgr 55d1: {label: "Heating running hours"}                              # 17.9.8
+energymgr 5ad1: {label: "Buffer charge hours heating"}                        # 20.2.0
+energymgr 6047: {label: "Flow temperature setpoint"}                          # 17.14.1
+energymgr 649f: {label: "Flow temperature setpoint (alt. layout)"}            # same value as 6047, every 25 s
+energymgr 602b: {label: "Boost time"}                                         # 17.2.4
+energymgr 6071: {label: "Zone 1 max flow temperature"}                        # 4.2.5
+energymgr 6171: {label: "Zone 1 min flow temperature"}                        # 4.2.6
+energymgr 6197: {label: "Zone 1 calculated flow target"}
+energymgr 6271: {label: "Zone 1 comfort temperature"}                         # 4.0.0
+energymgr 6371: {label: "Zone 1 reduced temperature"}                         # 4.0.1
+energymgr 6426: {label: "Frost protection temperature"}                       # 4.0.3
+energymgr 6471: {label: "Zone 1 heating curve offset"}                        # 4.2.3
+energymgr 6571: {label: "Zone 1 fixed flow temperature"}                      # 4.0.2
+energymgr 672e: {label: "Buffer setpoint temperature"}                        # 20.0.2
+energymgr 682e: {label: "Buffer SG Ready setpoint"}                           # 20.0.5
+energymgr 692e: {label: "Buffer comfort setpoint heating"}                    # 20.0.3
+energymgr 6996: {label: "Zone 1 room setpoint"}                               # 4.3.1
+energymgr 6a2e: {label: "Buffer PV integration offset"}                       # 20.0.6
+energymgr 6a71: {label: "Zone 1 heating curve slope"}                         # 4.2.2
+energymgr 7426: {label: "Outdoor temperature correction"}                     # 17.2.5 / 19.0.5
+energymgr 759e: {label: "Buffer high temperature"}                            # 20.1.2
+energymgr 7647: {label: "Outdoor temperature"}                                # 8.3.5
+energymgr 769e: {label: "Buffer low temperature"}                             # 20.1.0
+energymgr 7971: {label: "Zone 1 winter mode threshold"}                       # 4.1.1
+energymgr 7a71: {label: "Zone 1 winter mode delay"}                           # 4.1.2
+energymgr c079: {label: "Zone 1 thermoregulation"}                            # 4.2.1
+energymgr c200: {label: "Main circulator"}                                    # 17.15.0
+energymgr c279: {label: "Zone 1 room influence"}                              # 4.2.4
+energymgr c54b: {label: "Last inverter error"}                                # 17.11.1
+energymgr c679: {label: "Zone 1 mode"}                                        # 0.0
+energymgr c92a: {label: "HV input 1 configuration"}                           # 17.1.0
+energymgr c94b: {label: "Energy manager status"}                              # 17.14.0
+energymgr cb2a: {label: "HV input 2 configuration"}                           # 17.1.1
+energymgr ce79: {label: "Zone 1 heat request mode"}                           # 4.2.9
+energymgr d12c: {label: "Buffer charge mode"}                                 # 20.0.1
+energymgr d42a: {label: "AUX input 1 configuration"}                          # 17.1.3
+energymgr dc28: {label: "Hydraulic scheme"}                                   # 17.2.0
+
+heatpump 0c45: {label: "Flow switch"}                                         # 17.11.4
+heatpump 1ef3: {label: "Quiet mode active"}
+heatpump 6947: {label: "Inverter capacity"}                                   # 17.12.0
+heatpump 6a47: {label: "Flow setpoint sent to heat pump"}
+heatpump 6e13: {label: "Water flow"}                                          # 17.11.3
+heatpump 704f: {label: "Expansion valve position"}                            # 17.12.7
+heatpump 7117: {label: "Condenser outlet temperature"}                        # 17.10.6
+heatpump 7217: {label: "Suction temperature"}                                 # 17.10.4
+heatpump 7317: {label: "Discharge temperature"}                               # 17.10.5
+heatpump 7417: {label: "TEO temperature"}                                     # 17.10.7
+heatpump 7610: {label: "Flow temperature"}                                    # 17.10.1
+heatpump 7710: {label: "Return temperature"}                                  # 17.10.2
+heatpump 7810: {label: "Outside air temperature (heat pump sensor)"}          # 17.10.0
+heatpump 7910: {label: "Evaporator temperature"}                              # 17.10.3
+heatpump 7c4f: {label: "Electrical power"}
+heatpump c446: {label: "Compressor frequency limit"}                          # 17.12.2
+heatpump ca46: {label: "Heat pump status"}                                    # 17.11.0
+heatpump cb46: {label: "Compressor frequency"}                                # 17.12.1
+heatpump cd46: {label: "Requested mode"}
+heatpump d09c: {label: "Requested state"}
+
+sensys 0990: {label: "Zone 1 override active"}                               # M3: held by the Sensys
+sensys 6997: {label: "Zone 1 override temperature"}                          # M3
+sensys 7118: {label: "Zone 1 room temperature"}                               # 4.3.0
+
+gateway 0488: {label: "Internet weather"}                                     # 19.0.4
+gateway 0921: {label: "Wi-Fi network"}                                        # 19.0.0
+gateway 1421: {label: "Internet time"}                                        # 19.0.3
+gateway 7617: {label: "Online outdoor temperature"}                           # 19.1.5
+gateway c19a: {label: "Online weather data"}                                  # 19.1.6
+gateway c89c: {label: "Software update status"}                               # 19.1.4
+gateway cc4b: {label: "Connectivity status"}                                  # 19.1.0

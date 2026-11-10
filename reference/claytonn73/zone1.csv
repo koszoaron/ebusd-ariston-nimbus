@@ -1,0 +1,352 @@
+############################################################################################
+####                             ZONE 1 SETTINS AND MESSAGES                           
+#### address 13: master #12                                                             
+#### address 18: slave #12                                                             
+#### address 70: master #4           
+############################################################################################
+
+r,zone1,name,Z1 Name Setting,,fe,2001,d479
+b,zone1,name,Z1 Name Setting,,fe,200e,d479,,,zone_name
+
+############################################################################################
+# Setpoint
+############################################################################################
+
+# Comfort temperature and limits used with a two setpoint schedule (4.0.0)
+r,zone1,comfort_temp,Z1 Day Temp,,fe,2000,6271
+b,zone1,comfort_temp,Z1 Day Temp,13,fe,200f,6271,,,temperature:setting
+w,zone1,comfort_temp,Z1 Day Temp,70,fe,2020,6271,,,temperature:setting
+r,zone1,comfort_temp_limits,Z1 Day Temp Limits,,fe,2001,6271
+b,zone1,comfort_temp_limits,Z1 Day Temp Limits,13,fe,200e,6271,,,temperature_min_max
+
+# Reduced temperature and limits used with a two setpoint schedule (4.0.1)
+r,zone1,reduced_temp,Z1 Night Temp,,fe,2000,6371
+b,zone1,reduced_temp,Z1 Night Temp,13,fe,200f,6371,,,temperature:setting
+w,zone1,reduced_temp,Z1 Night Temp,70,fe,2020,6371,,,temperature:setting
+r,zone1,reduced_temp_limits,Z1 Night Temp Limits,,fe,2001,6371
+b,zone1,reduced_temp_limits,Z1 Night Temp Limits,13,fe,200e,6371,,,temperature_min_max
+
+# LWT Fixed Flow setpoint and limits - only used with fixed flow temperature (4.0.2)
+r,zone1,fixed_flow_setpoint,Z1 Fixed Flow Setpoint,,fe,2000,6571
+b,zone1,fixed_flow_setpoint,Z1 Fixed Flow Setpoint,13,fe,200f,6571,,,temperature:setting
+w,zone1,fixed_flow_setpoint,Z1 Fixed Flow Setpoint,70,fe,2020,6571,,,temperature:setting
+r,zone1,fixed_flow_setpoint_limits,Z1 Fixed Flow Setpoint Limits,,fe,2001,6571
+b,zone1,fixed_flow_setpoint_limits,Z1 Fixed Flow Setpoint Limits,13,fe,200e,6571,,,temperature_min_max
+
+# Frost Temperature and limits (4.0.3) - frost temp value is used by all zones
+r,zone1,frost_temp,Z1 Frost Temp,,fe,2000,6426
+b,zone1,frost_temp,Z1 Frost Temp,13,fe,200f,6426,,,temperature:setting
+w,zone1,frost_temp,Z1 Frost Temp,70,fe,2020,6426,,,temperature:setting
+r,zone1,frost_temp_limits,Z1 Frost Temp Limits,,fe,2001,6426
+b,zone1,frost_temp_limits,Z1 Frost Temp Limits,13,fe,200e,6426,,,temperature_min_max
+
+############################################################################################
+# Automatic Winter Mode
+############################################################################################
+
+# Automatic winter mode activation (4.1.0)
+r,zone1,winter_mode,Winter mode state,,fe,2001,0781
+w,zone1,winter_mode,Winter mode state,70,fe,2020,0781,,,onoff
+b,zone1,winter_mode,Winter mode state,13,fe,200e,0781,,,onoff
+
+# Threshold for the auto summer/winter switching temperature (4.1.1)
+r,zone1,winter_mode_temp,Winter Mode Temperature,,fe,2000,7971
+w,zone1,winter_mode_temp,Winter Mode Temperature,70,fe,2020,7971,,,temperature:setting
+b,zone1,winter_mode_temp,Winter Mode Temperature,13,fe,200f,7971,,,temperature:setting
+r,zone1,winter_mode_temp_limits,Winter Mode Temperature Limits,,fe,2001,7971
+b,zone1,winter_mode_temp_limits,Winter Mode Temperature Limts,13,fe,200e,7971,,,temperature_min_max
+
+b,zone1,winter_mode_bcast,Winter Mode Broadcast Info,13,fe,2020,7971,,,temperature:winter_mode_temp;ignore_2;longminutes:winter_mode_delay;ignore_2;onoff:winter_mode_active
+
+# Time for the auto summer/winter switching delay (4.1.2)
+r,zone1,winter_mode_delay,Winter Mode Delay,,fe,2000,7a71
+w,zone1,winter_mode_delay,Winter Mode Delay,70,fe,2020,7a71,,,longminutes:setting
+b,zone1,winter_mode_delay,Winter Mode Delay,13,fe,200f,7a71,,,longminutes:setting
+r,zone1,winter_mode_delay_limits,Winter Mode Delay Limits,,fe,2001,7a71
+b,zone1,winter_mode_delay_limits,Winter Mode Delay Limits,13,fe,200e,7a71,,,longminutes_min_max
+
+############################################################################################
+# Settings
+############################################################################################
+
+# Zone 1 water flow temperature range (4.2.0)
+# Update in Home Asistant disabled as is installation parameter
+r,zone1,heat_temp_range,Z1 Heating Temp Range,,fe,2001,0081
+b,zone1,heat_temp_range,Z1 Heating Temp Range,,fe,200e,0081,,,low_high
+w,ignored,heat_temp_range,Z1 Heating Temp Range,70,fe,2020,0081,,,low_high
+
+# Zone 1 thermoregulation type (4.2.1)
+r,zone1,heat_therm_type,Z1 Heating Thermoreg Type,,fe,2001,c079
+b,zone1,heat_therm_type,Z1 Heating Thermoreg Type,13,fe,200e,c079,,,heat_thermoreg_types
+w,zone1,heat_therm_type,Z1 Heating Thermoreg Type,70,fe,2020,c079,,,heat_thermoreg_types
+
+# Z1 Slope (4.2.2)
+r,zone1,slope,Z1 heat slope,,fe,2000,6a71
+b,zone1,slope,Z1 heat slope,13,fe,200f,6a71,,,slope
+w,zone1,slope,Z1 heat slope,70,fe,2020,6a71,,,slope
+r,zone1,slope_limits,Z1 heat slope,,fe,2001,6a71
+b,zone1,slope_limits,Z1 heat slope,13,fe,200e,6a71,,,slope_min_max
+
+# Paral shift (4.2.3)
+r,zone1,offset,Flow Temp Offset,,fe,2000,6471
+b,zone1,offset,Flow Temp Offset,13,fe,200f,6471,,,temperature:setting
+w,zone1,offset,Flow Temp Offset,70,fe,2020,6471,,,temperature:setting
+r,zone1,offset_limits,Flow Temp Offset Limits,,fe,2001,6471
+b,zone1,offset_limits,Flow Temp Offset Limits,13,fe,200e,6471,,,temperature_min_max
+
+# Room Influence Proportional (4.2.4)
+r,zone1,room_influence_proportion,Z1 Heating Room Temp Influence,,fe,2000,c279
+w,zone1,room_influence_proportion,Z1 Heating Room Temp Influence,70,fe,2020,c279,,,percent:setting
+b,zone1,room_influence_proportion,Z1 Heating Room Temp Influence,13,fe,200f,c279,,,percent:setting
+r,zone1,room_influence_proportion_limits,Z1 Heating Room Temp Influence,,fe,2001,c279
+b,zone1,room_influence_proportion_limits,Z1 Heating Room Temp Influence,13,fe,200e,c279,,,percent_min_max
+
+# LWT Maximum settings and limits (4.2.5)
+r,zone1,lwt_max,lwt maximum temperature,,fe,2000,6071
+b,zone1,lwt_max,lwt maximum temperature,,fe,200f,6071,,,temperature:setting
+w,zone1,lwt_max,lwt maximum temperature,70,fe,2020,6071,,,temperature:setting
+r,zone1,lwt_max_limits,lwt maximum temperature,,fe,2001,6071
+b,zone1,lwt_max_limits,lwt maximum temperature,13,fe,200e,6071,,,temperature_min_max
+
+# LWT Minimum settings and limits (4.2.6)
+r,zone1,lwt_min,lwt minimum temperature,,fe,2000,6171
+b,zone1,lwt_min,lwt minimum temperature,,fe,200f,6171,,,temperature:setting
+w,zone1,lwt_min,lwt minimum temperature,70,fe,2020,6171,,,temperature:setting
+r,zone1,lwt_min_limits,lwt minimum temperature,,fe,2001,6171
+b,zone1,lwt_min_limits,lwt minimum temperature,13,fe,200e,6171,,,temperature_min_max
+
+# Thermoregulation logic (4.2.7)  - seems to be single switch on zone1
+# Update in Home Asistant disabled as not using smart mode
+r,zone1,thermo_logic,Z1 Thermoregulation Logic,,fe,2001,db89
+b,zone1,thermo_logic,Z1 Thermoregulation Logic,,fe,200e,db89,,,thermoregulation_logic
+w,ignored,thermo_logic,Z1 Thermoregulation Logic,,fe,2020,db89,,,thermoregulation_logic
+
+# Quick night setback (4.2.8)
+r,zone1,quick_night_setback,Z1 Quick Night Setback,,fe,2001,0881
+b,zone1,quick_night_setback,Z1 Quick Night Setback,,fe,200e,0881,,,onoff
+w,zone1,quick_night_setback,Z1 Quick Night Setback,,fe,2020,0881,,,onoff
+
+# Heat request mode (4.2.9)
+r,zone1,heat_request_mode,Z1 Heating Request Mode,,fe,2000,ce79
+b,zone1,heat_request_mode,Z1 Heating Request Mode,13,fe,200f,ce79,,,heat_request_mode
+w,zone1,heat_request_mode,Z1 Heating Request Mode,,fe,2020,ce79,,,heat_request_mode
+r,ignored,z1_heat_request_mode_panel,Z1 Heating Request Mode,,fe,2001,ce79
+b,ignored,z1_heat_request_mode_panel,Z1 Heating Request Mode,,fe,200e,ce79,,,heat_request_mode
+
+############################################################################################
+# Diagnostics
+############################################################################################
+
+# Room T (4.3.0)
+# More irregular room temperature broadcast but can be read by ebusd
+r,zone1,room_temp,Z1 Room Temperature,,fe,2000,7118
+b,zone1,room_temp,Z1 Room Temperature,70,fe,200f,7118,,,temperature:reading
+# Regular 2 minute room temperature broadcast
+b,zone1,room_temp_bcast,Z1 Room Temperature,70,fe,2010,7118,,,temperature:reading
+# Room temp information from the panel
+r,ignored,z1_room_temp_panel,Z1 Room Temperature Limits,,fe,2001,7118
+b,ignored,z1_room_temp_panel,Z1 Room Temperature Limits,,fe,200e,7118,,,temperature
+
+# Room T setpoint (4.3.1)
+r,zone1,room_setpoint,Z1 Room Setpoint,,fe,2000,6996
+b,zone1,room_setpoint,Z1 Room Setpoint,13,fe,200f,6996,,,temperature:setting
+r,ignored,z1_room_setpoint_panel,Z1 Room Setpoint Limits,,fe,2001,6996
+b,ignored,z1_room_setpoint_panel,Z1 Room Setpoint Limits,,fe,200e,6996,,,temperature
+# Issued every 25 seconds and provides the Z1 Room Setpoint Information
+r,zone1,room_setpoint_bcast,Provides Z1 Room Setpoint,13,fe,2000,059106916996
+#b,zone1,room_setpoint_bcast,Provides Z1 Room Setpoint,13,fe,200f,0591,,,onoff:z5_heat_request;ignore_3;onoff:z6_heat_request;ignore_3;temperature:z1_room_setpoint
+b,zone1,room_setpoint_bcast,Provides Z1 Room Setpoint,13,fe,200f,0591,,,ignore_1;ignore_3;ignore_1;ignore_3;temperature:z1_room_setpoint
+
+# Flow temperature (4.3.2) and return temperature (4.3.3) are only visible with the Zone Module
+
+# Heat Request Z1 (4.3.4)
+# Issued every 25 seconds and provides the Z1 Heat Request Information
+r,ignored,z1_heat_request_long,Provides Z1 Heat Request,,fe,2000,0191029103910491
+# Issued every 5 minutes plus includes the response from above
+r,zone1,heat_request,Provides Z1 Heat Request,,fe,2000,0191
+b,zone1,heat_request,Provides Z1 Heat Request,,fe,200f,0191,,,onoff
+# Use the z1 only response above as the rest is not relevant
+# b,zone1,zone_heat_request_1,Provides Z1 Heat Request,,fe,200f,0191,,,onoff:z1_heat_request;ignore_3;onoff:z2_heat_request;ignore_3;onoff:z3_heat_request;ignore_3;onoff:z4_heat_request
+# From the user panel
+r,ignored,z1_heat_request_panel,Provides Z1 Heat Request,,fe,2001,0191
+b,ignored,z1_heat_request_panel,Provides Z1 Heat Request,,fe,200e,0191,,,onoff
+# broadcast by the system
+b,zone1,heat_request_bcast,Z1 Heat Request Broadcast,70,fe,2010,0191,,,onoff
+
+# Pump status (4.3.5) is only visible with the Zone Module
+
+# Relative Humidity (4.3.7)
+r,zone1,humidity,Z1 Humidity,31,fe,2000,c9c1
+b,zone1,humidity,Z1 Humidity,13,fe,200f,c9c1,,,percent:reading
+b,zone1,humidity_bcast,Z1 Humidity,13,fe,2010,c9c1,,,percent:reading
+r,ignored,z1_relative_humidity,Z1 Humidity,,fe,2001,c9c1
+b,ignored,z1_relative_humidity,Z1 Humidity,,fe,200e,c9c1,,,percent:reading
+
+# Zone Flow temperature setpoint (4.3.8)
+r,zone1,flow_setpoint_temperature,Z1 Flow Setpoint Temperature,,fe,2001,6197
+b,zone1,flow_setpoint_temperature,Z1 Flow Setpoint Temperature,,fe,200e,6197,,,temperature:setting
+
+############################################################################################
+# Cooling
+# Z1 Cooling messages set to ignored as not relevant to my system
+############################################################################################
+
+# T Set Cool (5.5.0)
+r,ignored,cooling_fixed_flow_setpoint,Z1 Cooling Fixed Flow Setpoint,,fe,2000,7071
+b,ignored,cooling_fixed_flow_setpoint,Z1 Cooling Fixed Flow Setpoint,13,fe,200f,7071,,,temperature:setting
+w,ignored,cooling_fixed_flow_setpoint,Z1 Cooling Fixed Flow Setpoint,70,fe,2020,7071,,,temperature:setting
+r,ignored,cooling_fixed_flow_setpoint_limits,Z1 Cooling Fixed Flow Setpoint,,fe,2001,7071
+b,ignored,cooling_fixed_flow_setpoint_limits,Z1 Cooling Fixed Flow Setpoint,13,fe,200e,7071,,,temperature_min_max
+
+# Cooling Temp Range (5.5.1)
+r,ignored,cooling_temp_range,Z1 Heating Temp Range,,fe,2001,0681
+b,ignored,cooling_temp_range,Z1 Heating Temp Range,,fe,200e,0681,,,low_high
+w,ignored,cooling_temp_range,Z1 Heating Temp Range,,fe,2020,0681,,,low_high
+
+# Cooling Thermoregulation (5.5.2)
+r,ignored,cooling_therm_type,Z1 Heating Thermoreg Type,,fe,2001,cb79
+b,ignored,coooling_therm_type,Z1 Heating Thermoreg Type,13,fe,200e,cb79,,,cool_thermoreg_types
+w,ignored,coooling_therm_type,Z1 Heating Thermoreg Type,13,fe,2020,cb79,,,cool_thermoreg_types
+
+# Cooling Slope (5.5.3)
+r,ignored,cooling_slope,Z1 coooling slope,,fe,2000,7671
+b,ignored,cooling_slope,Z1 coooling slope,13,fe,200f,7671,,,slope
+w,ignored,cooling_slope,Z1 coooling slope,13,fe,2020,7671,,,slope
+
+# Cooling Offset (5.5.4)
+r,ignored,cooling_offset,Flow Temp Offset,,fe,2000,7571
+b,ignored,cooling_offset,Flow Temp Offset,13,fe,200f,7571,,,temperature:setting
+w,ignored,cooling_offset,Flow Temp Offset,70,fe,2020,7571,,,temperature:setting
+r,ignored,cooling_offset_limits,Flow Temp Offset Limits,,fe,2001,7571
+b,ignored,cooling_offset_limits,Flow Temp Offset Limits,13,fe,200e,7571,,,temperature_min_max
+
+# Cooling max setpoint (5.5.5)
+r,ignored,cooling_lwt_max,lwt maximum temperature,,fe,2000,7171
+b,ignored,cooling_lwt_max,lwt maximum temperature,,fe,200f,7171,,,temperature:setting
+w,ignored,cooling_lwt_max,lwt maximum temperature,70,fe,2020,7171,,,temperature:setting
+r,ignored,cooling_lwt_max_limits,lwt maximum temperature,,fe,2001,7171
+b,ignored,cooling_lwt_max_limits,lwt maximum temperature,13,fe,200e,7171,,,temperature_min_max
+
+# Cooling min setpoint (5.5.6)
+r,ignored,cooling_lwt_min,lwt minimum temperature,,fe,2000,7371
+b,ignored,cooling_lwt_min,lwt minimum temperature,,fe,200f,7371,,,temperature:setting
+w,ignored,cooling_lwt_min,lwt minimum temperature,70,fe,2020,7371,,,temperature:setting
+r,ignored,cooling_lwt_min_limits,lwt minimum temperature,,fe,2001,7371
+b,ignored,cooling_lwt_min_limits,lwt minimum temperature,13,fe,200e,7371,,,temperature_min_max
+
+############################################################################################
+# Zone Module Settings - only visible with the Zone Module
+############################################################################################
+
+# Zone Pump Modulation (4.4.0)
+# 0-2
+
+# Target deltaT for pump modulation (4.4.1)
+# default 20°C [HT] or 7°C [LT] range [4 - 25]°C
+
+# Pump fixed speed (4.4.2)
+# default 1  range [0.2 -1]°C
+
+############################################################################################
+# Zone Regulation Parameters
+# All set to ignored as only relevant to smart setting on 4.2.7 which I do not use
+############################################################################################
+
+# Heating Type (4.7.0)
+r,ignored,heating_type,Z1 Heating Type,,fe,2001,d079
+w,ignored,heating_type,Z1 Heating Type,,fe,2020,d079,,,heating_type
+b,ignored,heating_type,Z1 Heating Type,,fe,200e,d079,,,heating_type
+
+# Room Influence (4.7.1)
+r,ignored,room_influence,Z1 Room Influence,,fe,2001,d379
+w,ignored,room_influence,Z1 Room Influence,,fe,2020,d379,,,room_influence
+b,ignored,room_influence,Z1 Room Influence,,fe,200e,d379,,,room_influence
+
+# Building Isolation Level (4.7.2)
+r,ignored,building_isolation_level,Z1 Building Isolation Level,,fe,2001,d179
+w,ignored,building_isolation_level,Z1 Building Isolation Level,,fe,2020,d179,,,building_isolation_level
+b,ignored,building_isolation_level,Z1 Building Isolation Level,,fe,200e,d179,,,building_isolation_level
+
+# Building Size (4.7.3) 
+r,ignored,building_size,Z1 Building Size,,fe,2001,d279
+w,ignored,building_size,Z1 Building Size,,fe,2020,d279,,,building_size
+b,ignored,building_size,Z1 Building Size,,fe,200e,d279,,,building_size
+
+# Climatic Zone (4.7.4)
+r,ignored,climatic_zone,Z1 Climatic Zone,,fe,2000,7c8e
+b,ignored,climatic_zone,Z1 Climatic Zone,,fe,200f,7c8e,,,temperature:setting
+w,ignored,climatic_zone,Z1 Climatic Zone,,fe,2020,7c8e,,,temperature:setting
+r,ignored,climatic_zone_limits,Z1 Climatic Zone Limits,,fe,2001,7c8e
+b,ignored,climatic_zone_limits,Z1 Climatic Zone Limts,,fe,200e,7c8e,,,temperature_min_max
+
+# Auto Slope Adaptation (4.7.5)
+r,ignored,slope_adaptation,Z1 Slope Adaptation,,fe,2001,0981
+w,ignored,slope_adaptation,Z1 Slope Adaptation,,fe,2020,0981,,,onoff
+b,ignored,slope_adaptation,Z1 Slope Adaptation,,fe,200e,0981,,,onoff
+
+############################################################################################
+# Advanced Settings
+############################################################################################
+
+# Z1 Heating controller (4.8.3)
+# Update in Home Asistant disabled as is installation parameter 
+r,zone1,heating_controller,unknown,,fe,2001,d579
+b,zone1,heating_controller,unknown,,fe,200e,d579,,,heating_controller
+w,ignored,heating_controller,unknown,70,fe,2020,d579,,,heating_controller
+
+# Z1 Cooling controller (4.8.4)
+
+# Humidity Control Threshold (4.8.7)
+r,ignored,z1_humidity_control_threshold,Cooling Humidity Alarm Limit,,fe,2000,da7b
+b,ignored,z1_humidity_control_threshold,Cooling Humidity Alarm Limit,13,fe,200f,da7b,,,percent:setting
+w,ignored,z1_humidity_control_threshold,Cooling Humidity Alarm Limit,70,fe,2020,da7b,,,percent:setting
+r,ignored,z1_humidity_control_threshold_limits,Cooling Humidity Alarm Limit Limits,,fe,2001,da7b
+b,ignored,z1_humidity_control_threshold_limits,Cooling Humidity Alarm Limit Limits,13,fe,200e,da7b,,,percent_min_max
+
+# Humidity Control Hysteresis (4.8.8)
+r,ignored,z1_humidity_control_hysterisis,Cooling Humidity Alarm Hysteresis,,fe,2000,db7b
+b,ignored,z1_humidity_control_hysterisis,Cooling Humidity Alarm Hysteresis,13,fe,200f,db7b,,,ignore_1;percent:setting
+w,ignored,z1_humidity_control_hysterisis,Cooling Humidity Alarm Hysteresis,70,fe,2020,db7b,,,percent:setting
+r,ignored,z1_humidity_control_hysterisis_limits,Cooling Humidity Alarm Hysteresis Limits,,fe,2001,db7b
+b,ignored,z1_humidity_control_hysterisis_hysterisis_limits,Cooling Humidity Alarm Hysteresis Limits,13,fe,200e,db7b,,,percent_min_max
+
+# Humidity Alarm (4.8.9)
+
+############################################################################################
+# Broadcast and other Messages
+############################################################################################
+
+b,ignored,heat_slope_3,Heat Slope Broadcast,13,fe,2020,6971,,,slope:value_6971;ignore_2;slope:z1_slope;ignore_2;slope:value_6b71
+b,ignored,lwt_settings,Settings Broadcast,13,fe,2020,6071,,,temperature:lwt_max;ignore_2;temperature:lwt_min;ignore_2;temperature:lwt_offset
+b,ignored,temp_bcast_1,Settings Broadcast,13,fe,2020,6426,,,temperature:frost_temp;ignore_2;room_influence:z1_room_influence;ignore_2;temperature:day_temp
+b,ignored,temp_bcast_2,Settings Broadcast,13,fe,2020,6371,,,temperature:night_temp;ignore_2;room_influence:z2_room_influence;ignore_2;temperature:z2_comfort_temp
+r,ignored,zone_setpoints1,Continues read of setpoint info,13,fe,2000,6a966b966c96
+#b,ignored,zone_setpoints1,Continues read of setpoint info,13,fe,200f,6a96,,,temperature:z2_room_setpoint;ignore_3;temperature:z3_room_setpoint;ignore_3;temperature:z4_room_setpoint
+r,ignored,zone_setpoints2,Continues read of setpoint info,13,fe,2000,6d966e96
+b,ignored,zone_setpoints2,Continues read of setpoint info,13,fe,200f,6d96,,,temperature:z5_room_setpoint;ignore_3;temperature:z6_room_setpoint
+b,ignored,setpoint_temps,Broadcast Messages,13,fe,2010,6996,,,temperature:z1_room_setpoint;ignore_2;temperature:z2_room_setpoint;ignore_2;temperature:z3_room_setpoint
+b,ignored,night_temp_settings,Broadcast Messages,13,fe,2020,6277,,,temperature:Param_6277_UIN;ignore_2;temperature:z1_reduced_temp;ignore_2;temperature:z2_reduced_temp;ignore_2;temperature:z3_reduced_temp
+b,ignored,day_temp_settings,Broadcast Messages,13,fe,2020,6176,,,temperature:Param_6176_UIN;ignore_2;temperature:Param_6177_UIN;ignore_2;temperature:z1_comfort_temp
+
+# Not Issued very often
+# b,ignored,zone_heat_bcast,Broadcast Messages,13,fe,2010,0191,,,onoff:z1_heat_request;ignore_3;onoff:z2_heat_request;ignore_3;onoff:z3_heat_request;ignore_3;onoff:z4_heat_request
+# b,ignored,heat_request_mode,Broadcast Messages,13,fe,2020,cb7f00ce79,,,heat_request_mode:z1_heat_request_mode;ignore_2;heat_request_mode:z2_heat_request_mode;ignore_2;heat_request_mode:z3_heat_request_mode
+# b,ignored,heat_temp_range,Broadcast Messages,13,fe,2020,0081,,,low_high:z1_heat_range;ignore_2;low_high:z2_heat_range;ignore_2;low_high:z3_heat_range
+
+r,ignored,zone_setpoints3,Broadcast Messages,13,fe,2000,069169966a96
+b,ignored,zone_setpoints3,Broadcast Messages,13,fe,200f,0691,,,onoff:z6_heat_request;ignore_3;temperature:z1_room_setpoint;ignore_3;temperature:z2_room_setpoint
+
+#r,ignored,zone_setpoints4,Broadcast Messages,13,fe,2000,6b966c966d96
+#b,ignored,zone_setpoints4,Broadcast Messages,13,fe,200f,6b96,,,temperature:z3_room_setpoint;ignore_3;temperature:z4_room_setpoint;ignore_3;temperature:z5_room_setpoint
+r,ignored,zone_setpoints5,Broadcast Messages,13,fe,2000,6c966d966e96
+b,ignored,zone_setpoints5,Broadcast Messages,13,fe,200f,6c96,,,temperature:z4_room_setpoint;ignore_3;temperature:z5_room_setpoint;ignore_3;temperature:z6_room_setpoint
+
+# Not issued often and not useful in single zone system
+#r,ignored,zone_heat_request_3,Broadcast Messages,13,fe,2000,0291039104910591
+#b,ignored,zone_heat_request_3,Broadcast Messages,13,fe,200f,0291,,,onoff:z2_heat_request;ignore_3;onoff:z3_heat_request;ignore_3;onoff:z4_heat_request;ignore_3;onoff:z5_heat_request
+
+# Hydraulic scheme (7.2.0) - not relevant to my system
+r,ignored,hydraulic_scheme,Hydraulic scheme diagnostic,,18,2000,dc28,,,hydraulic_scheme
+# w,ignored,hydraulic_scheme,Hydraulic scheme diagnostic,,18,2020,dc28,,,hydraulic_scheme
+b,ignored,hydraulic_scheme,Hydraulic scheme diagnostic,13,18,2010,dc28,,m,hydraulic_scheme
+

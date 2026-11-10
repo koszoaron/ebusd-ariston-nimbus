@@ -1,0 +1,82 @@
+# Whitelist of the writes ebusd may send (M3). scripts/gen_config.py turns each entry into one `w`
+# line in config/writes.csv, and tests/test_polled.py fails if the config holds any other `w` line.
+# Changing this file changes what can be sent on the bus: the owner approves every entry by name.
+#
+# Approved by the owner 2026-10-14 (W1-W3, W5, W6 of the M3 step 2 list, W7 after the cancel test; W4, the plant mode, dropped:
+# HA's "off" is zone 1 off, as in the app). Every telegram is a copy of what the Light Gateway (7f)
+# or the Sensys (70) broadcast for the same action on 2026-10-14 (docs/protocol.md,
+# "Settings and writes"); ebusd sends it as master 31 to fe (broadcast, no answer). Each set from HA is one
+# telegram; sequences (cancel the override before a mode change, override = temperature, flag and
+# end time) are HA's job.
+#
+# Every field is a value list, so ebusd itself refuses anything outside the approved values
+# (ValueListDataField::writeSymbols: a name from the list or a raw value that is a key of the list,
+# else "element not found" and nothing is sent). "const" fields are fixed bytes (ebusd "=value").
+#
+# Fields: name, type (ebusd), values: a list, or a range {from, to, step, divisor} expanded into one
+# entry per value (raw = value x divisor), or const.
+
+- name: z1_mode_set
+  label: "Zone 1 mode"
+  approved: W1
+  pbsb: "2020"
+  id: c679
+  source: "7f fe 2020 03 c679 03 (Manual -> Scheduled), 0990=0 then c679 02 / 00 (Manual / zone off)"
+  fields:
+    - {name: mode, type: UCH, values: {0: "off", 2: "manual", 3: "scheduled"}}
+
+- name: z1_override_active_set
+  label: "Zone 1 override active"
+  approved: W2, W5
+  pbsb: "2020"
+  id: "0990"
+  source: "7f fe 2020 03 0990 00 before every switch to Manual or Off; 70 fe 2020 03 0990 01 (Sensys override)"
+  fields:
+    - {name: active, type: UCH, values: {0: "off", 1: "on"}}
+
+- name: z1_comfort_temp_set
+  label: "Zone 1 comfort temperature (the setpoint in Manual mode)"
+  approved: W3
+  pbsb: "2020"
+  id: "6271"
+  source: "7f fe 2020 04 6271 e100 (22.5), dc00 (22.0)"
+  fields:
+    - {name: temp, type: UIN, range: {from: 10.0, to: 30.0, step: 0.5, divisor: 10}}
+
+- name: z1_override_temp_set
+  label: "Zone 1 override temperature"
+  approved: W5
+  pbsb: "2020"
+  id: "6997"
+  source: "70 fe 2020 04 6997 dc00 (Sensys override 22.0)"
+  fields:
+    - {name: temp, type: UIN, range: {from: 10.0, to: 30.0, step: 0.5, divisor: 10}}
+
+- name: z1_override_end_set
+  label: "Zone 1 override end time"
+  approved: W6
+  pbsb: "2073"
+  id: ""
+  source: "7f fe 2073 09 dc00 0f 0a 0e 0a 1a 01 01 (22.0 until 10:15 14.10.26, zone 1)"
+  fields:
+    - {name: temp, type: UIN, range: {from: 10.0, to: 30.0, step: 0.5, divisor: 10}}
+    - {name: minute, type: UCH, range: {from: 0, to: 59, step: 1}}
+    - {name: hour, type: UCH, range: {from: 0, to: 23, step: 1}}
+    - {name: day, type: UCH, range: {from: 1, to: 31, step: 1}}
+    - {name: month, type: UCH, range: {from: 1, to: 12, step: 1}}
+    - {name: year, type: UCH, range: {from: 26, to: 99, step: 1}}
+    - {name: active, type: UCH, const: 1}
+    - {name: zone, type: UCH, const: 1}
+
+- name: z1_override_clear
+  label: "Zone 1 override end time cleared (cancel)"
+  approved: W7 (owner 2026-10-14, after the cancel test)
+  pbsb: "2073"
+  # the first 6 data bytes (all zero) as the message id: with an empty id it would share ebusd's key
+  # (2073, no id) with z1_override_end_set, and ebusd then found no write message of this name
+  id: "000000000000"
+  source: "7f fe 2073 09 0000 00 00 00 00 00 00 01 (app: 'return to scheduling' during an override, 16:02:57, after 0990 = 0); the Sensys keeps an override while it has a valid end time and ignores 0990 = 0 alone"
+  fields:
+    - {name: year, type: UCH, const: 0}
+    - {name: active, type: UCH, const: 0}
+    - {name: zone, type: UCH, const: 1}

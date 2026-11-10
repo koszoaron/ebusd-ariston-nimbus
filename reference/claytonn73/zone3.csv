@@ -1,0 +1,295 @@
+############################################################################################
+####                             ZONE 3 SETTINS AND MESSAGES                            
+#### address 13: master #12                                                             
+#### address 18: slave #12                                                             
+#### address 70: master #4  
+############################################################################################
+
+
+r,zone3,name,Zone 3 Name Setting,,fe,2001,d47b
+b,zone3,name,Zone 3 Name Setting,,fe,200e,d47b,,,zone_name
+
+############################################################################################
+# Setpoint
+############################################################################################
+
+# Comfort temperature and limits used with a two setpoint schedule (4.0.0)
+r,zone3,comfort_temp,Z3 Day Temp,,fe,2000,6273
+b,zone3,comfort_temp,Z3 Day Temp,13,fe,200f,6273,,,temperature:setting
+w,zone3,comfort_temp,Z3 Day Temp,70,fe,2020,6273,,,temperature:setting
+r,zone3,comfort_temp_limits,Z3 Day Temp Limits,,fe,2001,6273
+b,zone3,comfort_temp_limits,Z3 Day Temp Limits,13,fe,200e,6273,,,temperature_min_max
+
+# Reduced temperature and limits used with a two setpoint schedule (4.0.1)
+r,zone3,reduced_temp,Z3 Night Temp,,fe,2000,6373
+b,zone3,reduced_temp,Z3 Night Temp,13,fe,200f,6373,,,temperature:setting
+w,zone3,reduced_temp,Z3 Night Temp,70,fe,2020,6373,,,temperature:setting
+r,zone3,reduced_temp_limits,Z3 Night Temp Limits,,fe,2001,6373
+b,zone3,reduced_temp_limits,statistics,13,fe,200e,6373,,,temperature_min_max
+
+# LWT Fixed Flow setpoint and limits - only used with fixed flow temperature (4.0.2)
+r,zone3,fixed_flow_setpoint,statistics,,fe,2000,6573
+b,zone3,fixed_flow_setpoint,statistics,13,fe,200f,6573,,,temperature:setting
+w,zone3,fixed_flow_setpoint,statistics,70,fe,2020,6573,,,temperature:setting
+r,zone3,fixed_flow_setpoint_limits,statistics,,fe,2001,6573
+b,zone3,fixed_flow_setpoint_limits,statistics,13,fe,200e,6573,,,temperature_min_max
+
+# Frost Temperature and limits (4.0.3) - frost temperature is shared among all zones
+
+############################################################################################
+# Automatic Winter Mode
+############################################################################################
+
+# Automatic winter mode activation (4.1.0)
+r,zone3,winter_mode,Winter mode state,,fe,2001,0783
+w,zone3,winter_mode,Winter mode state,70,fe,2020,0783,,,onoff
+b,zone3,winter_mode,Winter mode state,13,fe,200e,0783,,,onoff
+
+# Threshold for the auto summer/winter switching temperature (4.1.1)
+r,zone3,winter_mode_temp,statistics,,fe,2000,7973
+w,zone3,winter_mode_temp,statistics,70,fe,2020,7973,,,temperature:setting
+b,zone3,winter_mode_temp,statistics,13,fe,200f,7973,,,temperature:setting
+r,zone3,winter_mode_temp_limits,statistics,,fe,2001,7973
+b,zone3,winter_mode_temp_limits,statistics,13,fe,200e,7973,,,temperature_min_max
+
+#b,zone3,winter_mode_bcast,statistics,13,fe,2020,7971,,,temperature:winter_mode_temp;ignore_2;longminutes:winter_mode_delay;ignore_2;onoff:winter_mode_active
+
+# Time for the auto summer/winter switching delay (4.1.2)
+r,zone3,winter_mode_delay,statistics,,fe,2000,7a73
+w,zone3,winter_mode_delay,statistics,70,fe,2020,7a73,,,longminutes:setting
+b,zone3,winter_mode_delay,statistics,13,fe,200f,7a73,,,longminutes:setting
+r,zone3,winter_mode_delay_limits,statistics,,fe,2001,7a73
+b,zone3,winter_mode_delay_limits,statistics,13,fe,200e,7a73,,,longminutes_min_max
+
+############################################################################################
+# Settings
+############################################################################################
+
+# Zone 3 water flow temperature range (4.2.0)
+r,zone3,heat_temp_range,Z3 Heating Temp Range,,fe,2001,0083
+b,zone3,heat_temp_range,Z3 Heating Temp Range,,fe,200e,0083,,,low_high
+w,zone3,heat_temp_range,Z3 Heating Temp Range,70,fe,2020,0083,,,low_high
+
+# Zone 3 thermoregulation type (4.2.1)
+r,zone3,heat_therm_type,Z3 Heating Thermoreg Type,,fe,2001,c07b
+b,zone3,heat_therm_type,Z3 Heating Thermoreg Type,13,fe,200e,c07b,,,heat_thermoreg_types
+w,zone3,heat_therm_type,Z3 Heating Thermoreg Type,70,fe,2020,c07b,,,heat_thermoreg_types
+
+# Z3 Slope (4.2.2)
+r,zone3,slope,heat slope,,fe,2000,6a73
+b,zone3,slope,heat slope,13,fe,200f,6a73,,,slope
+w,zone3,slope,heat slope,70,fe,2020,6a73,,,slope
+r,zone3,slope_limits,heat slope,,fe,2001,6a73
+b,zone3,slope_limits,heat slope,13,fe,200e,6a73,,,slope_min_max
+
+# Paral shift (4.2.3)
+r,zone3,offset,Flow Temp Offset,,fe,2000,6473
+b,zone3,offset,Flow Temp Offset,13,fe,200f,6473,,,temperature:setting
+w,zone3,offset,Flow Temp Offset,70,fe,2020,6473,,,temperature:setting
+r,zone3,offset_limits,Flow Temp Offset Limits,,fe,2001,6473
+b,zone3,offset_limits,Flow Temp Offset Limits,13,fe,200e,6473,,,temperature_min_max
+
+# Room Influence Proportional (4.2.4)
+r,zone3,room_influence_proportion,Z3 Heating Room Temp Influence,,fe,2000,c27b
+w,zone3,room_influence_proportion,Z3 Heating Room Temp Influence,70,fe,2020,c27b,,,percent:setting
+b,zone3,room_influence_proportion,Z3 Heating Room Temp Influence,13,fe,200f,c27b,,,percent:setting
+r,zone3,room_influence_proportion_limits,Z3 Heating Room Temp Influence,,fe,2001,c27b
+b,zone3,room_influence_proportion_limits,Z3 Heating Room Temp Influence,13,fe,200e,c27b,,,percent_min_max
+
+# LWT Maximum settings and limits (4.2.5)
+r,zone3,lwt_max,lwt maximum temperature,,fe,2000,6073
+b,zone3,lwt_max,lwt maximum temperature,,fe,200f,6073,,,temperature:setting
+w,zone3,lwt_max,lwt maximum temperature,70,fe,2020,6073,,,temperature:setting
+r,zone3,lwt_max_limits,lwt maximum temperature,,fe,2001,6073
+b,zone3,lwt_max_limits,lwt maximum temperature,13,fe,200e,6073,,,temperature_min_max
+
+# LWT Minimum settings and limits (4.2.6)
+r,zone3,lwt_min,lwt minimum temperature,,fe,2000,6173
+b,zone3,lwt_min,lwt minimum temperature,,fe,200f,6173,,,temperature:setting
+w,zone3,lwt_min,lwt minimum temperature,70,fe,2020,6173,,,temperature:setting
+r,zone3,lwt_min_limits,lwt minimum temperature,,fe,2001,6173
+b,zone3,lwt_min_limits,lwt minimum temperature,13,fe,200e,6173,,,temperature_min_max
+
+# Thermoregulation logic (4.2.7) - seems to be single switch on zone1
+
+# Quick night setback (4.2.8)
+r,zone3,quick_night_setback,unknown,,fe,2001,0883
+b,zone3,quick_night_setback,unknown,,fe,200e,0883,,,onoff
+w,zone3,quick_night_setback,unknown,,fe,2020,0883,,,onoff
+
+# Heat request mode (4.2.9)
+r,zone3,heat_request_mode,Z3 Heating Request Mode,,fe,2000,ce7b
+b,zone3,heat_request_mode,Z3 Heating Request Mode,13,fe,200f,ce7b,,,heat_request_mode
+w,zone3,heat_request_mode,Z3 Heating Request Mode,,fe,2020,ce7b,,,heat_request_mode
+r,ignored,z3_heat_request_mode_panel,unknown,,fe,2001,ce7b
+b,ignored,z3_heat_request_mode_panel,unknown,,fe,200e,ce7b,,,heat_request_mode
+
+############################################################################################
+# Diagnostics
+############################################################################################
+
+# Room T (4.3.0)
+# More irregular room temperature broadcast but can be read by ebusd
+#r,zone3,room_temp,statistics,,fe,2000,711a
+#b,zone3,room_temp,statistics,70,fe,200f,711a,,,temperature:reading
+# Regular 2 minute room temperature broadcast
+#b,zone3,room_temp_bcast,statistics,70,fe,2010,711a,,,temperature:reading
+#r,ignored,room_temp_panel,Z3 Room Temperature Limits,,fe,2001,711a
+#b,ignored,room_temp_panel,Z3 Room Temperature Limits,,fe,200e,711a,,,temperature
+
+# Room T setpoint (4.3.1)
+r,zone3,room_setpoint,statistics,,fe,2000,6b96
+b,zone3,room_setpoint,statistics,13,fe,200f,6b96,,,temperature:setting
+r,ignored,z3_room_setpoint_panel,Z3 Room Setpoint Limits,,fe,2001,6b96
+b,ignored,z3_room_setpoint_panel,Z3 Room Setpoint Limits,,fe,200e,6b96,,,temperature
+
+# Flow temperature (4.3.2) and return temperature (4.3.3) are only visible with the Zone Module
+
+# Heat Request Z3 (4.3.2)  (4.3.4 in manual)
+# From the user panel
+r,ignored,z3_heat_request_panel,Provides Z3 Heat Request,,fe,2001,0391
+b,ignored,z3_heat_request_panel,Provides Z3 Heat Request,,fe,200e,0391,,,onoff
+# Issued every 25 seconds and provides the Z3 Heat Request Information
+#r,ignored,heat_request_long,Provides Z3 Heat Request,,fe,2000,0191029103910491
+
+# Issued every 5 minutes 
+r,zone3,heat_request,Provides Z3 Heat Request,,fe,2000,0391
+b,zone3,heat_request,Provides Z3 Heat Request,,fe,200f,0391,,,onoff
+# Use the Z3 only response as the rest is not relevant
+# b,zone3,zone_heat_request_1,Provides Z3 Heat Request,,fe,200f,0191,,,onoff:heat_request;ignore_3;onoff:z2_heat_request;ignore_3;onoff:z3_heat_request;ignore_3;onoff:z4_heat_request
+# Issued every 25 seconds and provides the Z3 Room Setpoint Information
+#r,zone3,zone_heat_request_2,Provides Z3 Room Setpoint,13,fe,2000,059106916996
+#b,zone3,zone_heat_request_2,Provides Z3 Room Setpoint,13,fe,200f,0591,,,onoff:z5_heat_request;ignore_3;onoff:z6_heat_request;ignore_3;temperature:room_setpoint
+
+# Pump status (4.3.5) is only visible with the Zone Module
+
+# Relative Humidity (4.3.3) (4.3.7 in manual)
+r,zone3,humidity,statistics,31,fe,2000,cbc1
+b,zone3,humidity,statistics,13,fe,200f,cbc1,,,percent:reading
+b,zone3,humidity_bcast,statistics,13,fe,2010,cbc1,,,percent:reading
+r,ignored,z3_relative_humidity,unknown,,fe,2001,cbc1
+b,ignored,z3_relative_humidity,unknown,,fe,200e,cbc1,,,percent:reading
+
+# Zone Flow temperature setpoint (4.3.4) (4.3.8 in manual)
+r,zone3,flow_setpoint_temperature,Z3 Flow Setpoint Temperature,,fe,2001,6397
+b,zone3,flow_setpoint_temperature,Z3 Flow Setpoint Temperature,,fe,200e,6397,,,temperature:setting
+
+############################################################################################
+# Cooling
+############################################################################################
+
+# T Set Cool (5.5.0)
+r,zone3,cooling_fixed_flow_setpoint,statistics,,fe,2000,7073
+b,zone3,cooling_fixed_flow_setpoint,statistics,13,fe,200f,7073,,,temperature:setting
+w,zone3,cooling_fixed_flow_setpoint,statistics,70,fe,2020,7073,,,temperature:setting
+r,zone3,cooling_fixed_flow_setpoint_limits,statistics,,fe,2001,7073
+b,zone3,cooling_fixed_flow_setpoint_limits,statistics,13,fe,200e,7073,,,temperature_min_max
+
+# Cooling Temp Range (5.5.1)
+r,zone3,cooling_temp_range,Z2 Heating Temp Range,,fe,2001,0683
+b,zone3,cooling_temp_range,Z2 Heating Temp Range,,fe,200e,0683,,,low_high
+w,zone3,cooling_temp_range,Z2 Heating Temp Range,,fe,2020,0683,,,low_high
+
+# Cooling Thermoregulation (5.5.2)
+r,zone3,cooling_therm_type,Z1 Heating Thermoreg Type,,fe,2001,cb7b
+b,zone3,coooling_therm_type,Z1 Heating Thermoreg Type,13,fe,200e,cb7b,,,cool_thermoreg_types
+w,zone3,coooling_therm_type,Z1 Heating Thermoreg Type,13,fe,2020,cb7b,,,cool_thermoreg_types
+
+# Cooling Slope (5.5.3)
+r,zone3,cooling_slope,heat slope,,fe,2000,7673
+b,zone3,cooling_slope,heat slope,13,fe,200f,7673,,,slope
+w,zone3,cooling_slope,heat slope,13,fe,2020,7673,,,slope
+
+# Cooling Offset (5.5.4)
+r,zone3,cooling_offset,Flow Temp Offset,,fe,2000,7573
+b,zone3,cooling_offset,Flow Temp Offset,13,fe,200f,7573,,,temperature:setting
+w,zone3,cooling_offset,Flow Temp Offset,70,fe,2020,7573,,,temperature:setting
+r,zone3,cooling_offset_limits,Flow Temp Offset Limits,,fe,2001,7573
+b,zone3,cooling_offset_limits,Flow Temp Offset Limits,13,fe,200e,7573,,,temperature_min_max
+
+# Cooling max setpoint (5.5.5)
+r,zone3,cooling_lwt_max,lwt maximum temperature,,fe,2000,7173
+b,zone3,cooling_lwt_max,lwt maximum temperature,,fe,200f,7173,,,temperature:setting
+w,zone3,cooling_lwt_max,lwt maximum temperature,70,fe,2020,7173,,,temperature:setting
+r,zone3,cooling_lwt_max_limits,lwt maximum temperature,,fe,2001,7173
+b,zone3,cooling_lwt_max_limits,lwt maximum temperature,13,fe,200e,7173,,,temperature_min_max
+
+# Cooling min setpoint (5.5.6)
+r,zone3,cooling_lwt_min,lwt minimum temperature,,fe,2000,7373
+b,zone3,cooling_lwt_min,lwt minimum temperature,,fe,200f,7373,,,temperature:setting
+w,zone3,cooling_lwt_min,lwt minimum temperature,70,fe,2020,7373,,,temperature:setting
+r,zone3,cooling_lwt_min_limits,lwt minimum temperature,,fe,2001,7373
+b,zone3,cooling_lwt_min_limits,lwt minimum temperature,13,fe,200e,7373,,,temperature_min_max
+
+############################################################################################
+# Zone Module Settings - only visible with the Zone Module
+############################################################################################
+
+# Zone Pump Modulation (4.4.0)
+# 0-2
+
+# Target deltaT for pump modulation (4.4.1)
+# default 20°C [HT] or 7°C [LT] range [4 - 25]°C
+
+# Pump fixed speed (4.4.2)
+# default 1  range [0.2 -1]°C
+
+############################################################################################
+# Zone Regulation Parameters
+############################################################################################
+
+# Heating Type (4.7.0)
+r,zone3,heating_type,Z3 Heating Type,,fe,2001,d07b
+w,zone3,heating_type,Z3 Heating Type,,fe,2020,d07b,,,heating_type
+b,zone3,heating_type,Z3 Heating Type,,fe,200e,d07b,,,heating_type
+
+# Room Influence (4.7.1)
+r,zone3,room_influence,Z3 Room Influence,,fe,2001,d37b
+w,zone3,room_influence,Z3 Room Influence,,fe,2020,d37b,,,room_influence
+b,zone3,room_influence,Z3 Room Influence,,fe,200e,d37b,,,room_influence
+
+# Building Isolation Level (4.7.2)
+r,zone3,building_isolation_level,Z3 Building Isolation Level,,fe,2001,d17b
+w,zone3,building_isolation_level,Z3 Building Isolation Level,,fe,2020,d17b,,,building_isolation_level
+b,zone3,building_isolation_level,Z3 Building Isolation Level,,fe,200e,d17b,,,building_isolation_level
+
+# Building Size (4.7.3) 
+r,zone3,building_size,Z3 Building Size,,fe,2001,d27b
+w,zone3,building_size,Z3 Building Size,,fe,2020,d27b,,,building_size
+b,zone3,building_size,Z3 Building Size,,fe,200e,d27b,,,building_size
+
+# Climatic Zone (4.7.4) - Likely common with zone 1
+
+# Auto Slope Adaptation (4.7.5)
+r,zone3,slope_adaptation,Z3 Slope Adaptation,,fe,2001,0983
+w,zone3,slope_adaptation,Z3 Slope Adaptation,,fe,2020,0983,,,onoff
+b,zone3,slope_adaptation,Z3 Slope Adaptation,,fe,200e,0983,,,onoff
+
+############################################################################################
+# Advanced Settings
+############################################################################################
+
+# Z3 Heating controller (4.8.3)
+r,zone3,heating_controller,unknown,,fe,2001,d57b
+b,zone3,heating_controller,unknown,,fe,200e,d57b,,,heating_controller
+w,zone3,heating_controller,unknown,70,fe,2020,d57b,,,heating_controller
+
+# Z3 Cooling controller (4.8.4)
+
+# Humidity Control Threshold (4.8.7)
+#r,ignored,humidity_control_threshold,Cooling Humidity Alarm Limit,,fe,2000,da7b
+#b,ignored,humidity_control_threshold,Cooling Humidity Alarm Limit,13,fe,200f,da7b,,,percent:setting
+#w,ignored,humidity_control_threshold,Cooling Humidity Alarm Limit,70,fe,2020,da7b,,,percent:setting
+#r,ignored,humidity_control_threshold_limits,Cooling Humidity Alarm Limit Limits,,fe,2001,da7b
+#b,ignored,humidity_control_threshold_limits,Cooling Humidity Alarm Limit Limits,13,fe,200e,da7b,,,percent_min_max
+
+# Humidity Control Hysteresis (4.8.8)
+#r,ignored,humidity_control_hysterisis,Cooling Humidity Alarm Hysteresis,,fe,2000,db7b
+#b,ignored,humidity_control_hysterisis,Cooling Humidity Alarm Hysteresis,13,fe,200f,db7b,,,ignore_1;percent:setting
+#w,ignored,humidity_control_hysterisis,Cooling Humidity Alarm Hysteresis,70,fe,2020,db7b,,,percent:setting
+#r,ignored,humidity_control_hysterisis_limits,Cooling Humidity Alarm Hysteresis Limits,,fe,2001,db7b
+#b,ignored,humidity_control_hysterisis_hysterisis_limits,Cooling Humidity Alarm Hysteresis Limits,13,fe,200e,db7b,,,percent_min_max
+
+# Humidity Alarm (4.8.9)
+
+

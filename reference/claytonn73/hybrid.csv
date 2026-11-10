@@ -1,0 +1,18 @@
+
+
+
+
+r,hybrid,hybrid_mode,statistics,,18,2001,c628,,,hybrid_mode
+w,hybrid,hybrid_mode,statistics,,18,2020,c628,,,hybrid_mode
+b,hybrid,hybrid_mode,statistics,13,18,2010,c628,,m,hybrid_mode
+
+r,hybrid,hybrid_logic,statistics,,18,2001,ce28,,,hybrid_logic
+w,hybrid,hybrid_logic,statistics,,18,2020,ce28,,,hybrid_logic
+b,hybrid,hybrid_logic,statistics,13,18,2010,ce28,,m,hybrid_logic
+
+r,hybrid,gas_electric_min_cost_ratio,Gas Electric Min Cost Ratio,,18,2000,cc28,,,ignore_1;cost_ratio
+r,hybrid,gas_electric_max_cost_ratio,Gas Electric Max Cost Ratio,,18,2000,cb28,,,ignore_1;cost_ratio
+r,hybrid,gas_electric_energy_ratio,Gas Electric Energy Ratio,,18,2000,682b,,,ignore_1;energy_ratio
+
+
+r,hybrid,heatpump_and_boiler_operating_hours,Heatpump and Boiler Combined Operating Hours,,18,2000,4ed1,,,ignore_1;hours

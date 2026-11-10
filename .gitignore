@@ -1,0 +1,13 @@
+# Raw captures contain serial-number broadcasts (rule 3)
+captures/
+# Deployment settings stay local; commit only *.example
+.env
+config.local.*
+*.local.toml
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+*.egg-info/
+build/
+reports/

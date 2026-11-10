@@ -1,0 +1,27 @@
+
+############################################################################################
+####                             ZONE 4-6 SETTINS AND MESSAGES                          ####
+############################################################################################
+
+# Zone 4 to 6 settings not investigated to any great degree as not present on system
+
+r,ignored,z4_comfort_temp,statistics,,fe,2001,6274
+b,ignored,z4_comfort_temp,statistics,13,fe,200e,6274,,,temperature_min_max
+
+r,ignored,z4_reduced_temp,statistics,,fe,2001,6374
+b,ignored,z4_reduced_temp,statistics,13,fe,200e,6374,,,temperature_min_max
+
+r,ignored,z5_comfort_temp,statistics,,fe,2001,6275
+b,ignored,z5_comfort_temp,statistics,13,fe,200e,6275,,,temperature_min_max
+
+r,ignored,z5_reduced_temp,statistics,,fe,2001,6375
+b,ignored,z5_reduced_temp,statistics,13,fe,200e,6375,,,temperature_min_max
+
+r,ignored,z6_comfort_temp,statistics,,fe,2001,6276
+b,ignored,z6_comfort_temp,statistics,13,fe,200e,6276,,,temperature_min_max
+
+r,ignored,z6_reduced_temp,statistics,,fe,2001,6376
+b,ignored,z6_reduced_temp,statistics,13,fe,200e,6376,,,temperature_min_max
+
+r,ignored,z6_room_setpoint,statistics,,fe,2000,6e96
+b,ignored,z6_room_setpoint,statistics,13,fe,200f,6e96,,,temperature

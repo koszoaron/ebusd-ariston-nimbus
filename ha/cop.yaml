@@ -1,0 +1,112 @@
+# Heat pump heat output and COP for Home Assistant (draft for the M4 package).
+# Put this file in <config>/packages/ and enable packages in configuration.yaml:
+#   homeassistant:
+#     packages: !include_dir_named packages
+# Check the entity ids below against yours (Settings > Entities). The ebusd ones follow from the
+# device ("ebusd heatpump") and the label in registers/labels.yaml. Replace the Shelly one.
+#
+# Heat (kW) = water flow (L/min) x (flow - return) (K) x 0.0698   [4.186 kJ/(kg K) / 60 s/min, 1 kg/L]
+# COP = heat / electrical power, while the compressor runs, averaged over several minutes.
+#
+# M2 corrections (checked offline with ebus-hasim against ebus-cycles):
+# - the live COP is the ratio of the heat and electrical energy over the last 10 minutes (statistics
+#   "change" of the two integrations). The draft averaged the power sensors with "mean", which
+#   averages samples, not time; "average_step" is time-weighted but its window starts at the oldest
+#   sample still in the buffer, and the heat output does not change while the compressor is off, so
+#   after a pause its window is shorter than the Shelly's: both read 10.0 instead of 6.8 for a run
+#   that followed a 4-minute pause. The energies update at least every 30 s (max_sub_interval), so
+#   both windows cover the same 10 minutes;
+# - the sample buffer is a cap only (sampling_size 200 could cut the window to a few minutes);
+# - the energy and the live COP use the signed heat output: when the flow is colder than the return
+#   (defrost) the heat is negative and is subtracted. Only the displayed heat output is clamped at 0.
+#   The daily heat meter is a net meter, so a decrease is not taken for a reset.
+
+template:
+  - sensor:
+      - name: "Heat pump heat output (signed)"
+        unique_id: hp_heat_output_signed
+        unit_of_measurement: "kW"
+        device_class: power
+        state_class: measurement
+        # 0 while the compressor is off, so the pump run-on does not count as heat production;
+        # negative while the flow is colder than the return (defrost)
+        state: >
+          {% set f = states('sensor.heating_ebusd_heatpump_water_flow') | float(0) %}
+          {% set dt = states('sensor.heating_ebusd_heatpump_flow_temperature') | float(0)
+                    - states('sensor.heating_ebusd_heatpump_return_temperature') | float(0) %}
+          {% set on = states('sensor.heating_ebusd_heatpump_compressor_frequency') | float(0) > 0 %}
+          {{ (f * dt * 0.0698) | round(3) if on else 0 }}
+        availability: >
+          {{ has_value('sensor.heating_ebusd_heatpump_water_flow')
+             and has_value('sensor.heating_ebusd_heatpump_flow_temperature')
+             and has_value('sensor.heating_ebusd_heatpump_return_temperature') }}
+
+      - name: "Heat pump heat output"
+        unique_id: hp_heat_output
+        unit_of_measurement: "kW"
+        device_class: power
+        state_class: measurement
+        # for display only: never below 0
+        state: "{{ [states('sensor.heat_pump_heat_output_signed') | float(0), 0] | max | round(2) }}"
+        availability: "{{ has_value('sensor.heat_pump_heat_output_signed') }}"
+
+      - name: "Heat pump COP (live)"
+        unique_id: hp_cop_live
+        state_class: measurement
+        # system COP against the Shelly total over the last 10 minutes; unavailable while the
+        # compressor is off. 0.033 kWh in 10 min = 200 W average
+        state: >
+          {% set heat = states('sensor.hp_heat_energy_10min') | float(0) %}
+          {% set el = states('sensor.hp_electric_energy_10min') | float(0) %}
+          {{ (heat / el) | round(2) if el > 0.033 else none }}
+        availability: >
+          {{ states('sensor.heating_ebusd_heatpump_compressor_frequency') | float(0) > 0 }}
+
+      - name: "Heat pump COP (today)"
+        unique_id: hp_cop_today
+        state_class: measurement
+        state: >
+          {% set heat = states('sensor.hp_heat_today') | float(0) %}
+          {% set el = states('sensor.hp_electric_energy_today') | float(0) %}
+          {{ (heat / el) | round(2) if el > 0.1 else none }}
+
+sensor:
+  # energies over the last 10 minutes, for the live COP
+  - platform: statistics
+    name: "hp_heat_energy_10min"
+    entity_id: sensor.hp_heat_energy
+    state_characteristic: change
+    max_age: { minutes: 10 }
+    sampling_size: 10000    # only a cap; max_age sets the window
+  - platform: statistics
+    name: "hp_electric_energy_10min"
+    entity_id: sensor.hp_electric_energy
+    state_characteristic: change
+    max_age: { minutes: 10 }
+    sampling_size: 10000
+
+  # energies (daily COP, and the live COP above); max_sub_interval updates them while the source is
+  # constant, so the 10-minute change never misses more than 30 s
+  - platform: integration
+    name: "hp_heat_energy"
+    source: sensor.heat_pump_heat_output_signed
+    unit_prefix: null       # source is already kW -> kWh
+    round: 3
+    method: left
+    max_sub_interval: { seconds: 30 }
+  - platform: integration
+    name: "hp_electric_energy"
+    source: sensor.SHELLY_TOTAL_ACTIVE_POWER      # replace, as above (W -> kWh)
+    unit_prefix: k
+    round: 3
+    method: left
+    max_sub_interval: { seconds: 30 }
+
+utility_meter:
+  hp_heat_today:
+    source: sensor.hp_heat_energy
+    cycle: daily
+    net_consumption: true   # defrost lowers the heat energy; not a meter reset
+  hp_electric_energy_today:
+    source: sensor.hp_electric_energy
+    cycle: daily

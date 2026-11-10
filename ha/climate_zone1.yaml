@@ -1,0 +1,303 @@
+# Zone 1 climate entity over the eBUS (M3). Put this file in <config>/packages/ (see ha/cop.yaml).
+#
+# What it does, and the telegrams behind it (docs/protocol.md, "Settings and writes"):
+#   off   = zone 1 off (frost protection, 5 C)  -> override off, then mode off
+#   heat  = zone 1 Manual                        -> override off, then mode manual
+#   auto  = zone 1 Scheduled (time program)      -> mode scheduled
+#   target temperature in heat: the comfort temperature (the Manual setpoint)
+#   target temperature in auto: a temporary override for input_number.zone1_override_minutes
+#   preset "override": an override is running (started here, in the app or on the Sensys);
+#   preset "none" cancels it (flag off and end time cleared, as "return to scheduling" in the app)
+# Changes show at once (optimistic, as in the app); a write that is not confirmed reverts the entity
+# to the real values and raises a notification.
+# Script script.zone1_override starts an override with a temperature and a duration (both required).
+#
+# Every write is one MQTT ".../set" to ebusd, which sends one broadcast (config/writes.csv; ebusd
+# itself refuses values outside the approved lists). A write can fail on a busy bus (lost
+# arbitration), so each one is confirmed against the energy manager's own broadcast of the new value
+# and retried; after the last try a persistent notification says so.
+#
+# The override is held by the Sensys: it adopts the three telegrams (temperature, flag, end time) at
+# its next minute tick, re-broadcasts them every minute and ends the override itself at the end
+# time, so nothing here has to revert it. The three are sent back to back, as the Sensys does; sent
+# minutes apart, the Sensys's minute broadcast resets the flag before the end time arrives.
+#
+# Needs: the HA MQTT user may publish the five set topics (EMQX ACL, checked by ebus-mqttacl), and
+# these ebusd entities (names from config/ariston.csv; check them under the ebusd devices). The
+# "heating_" prefix is the area (mqtt-hassio.cfg: area = Heating), which recent HA versions put in
+# front of new entity IDs; without it the IDs start with "ebusd_":
+#   sensor.heating_ebusd_energymgr_zone_1_mode                 Off / Manual night / Manual / Time program
+#   sensor.heating_ebusd_energymgr_zone_1_mode_alt_layout(_2, _3), ..._zone_1_mode_state (merged below)
+#   sensor.heating_ebusd_energymgr_zone_1_room_setpoint        what the zone heats to now (6996)
+#   sensor.heating_ebusd_energymgr_zone_1_comfort_temperature  the Manual setpoint (6271)
+#   sensor.heating_ebusd_sensys_zone_1_room_temperature        room temperature (7118)
+#   binary_sensor.heating_ebusd_energymgr_zone_1_heat_request
+#   binary_sensor.heating_ebusd_sensys_zone_1_override_active  (0990)
+#   (also new in M3: sensor.heating_ebusd_sensys_zone_1_override_temperature, 6997, not used here)
+
+input_number:
+  zone1_override_minutes:
+    name: "Zone 1 override duration"
+    icon: mdi:timer-outline
+    min: 15
+    max: 720
+    step: 15
+    initial: 60
+    unit_of_measurement: min
+    mode: box
+
+template:
+  # The zone mode (c679) comes in several frames; ebusd decodes four of them (config/ariston.csv:
+  # z1_mode and its alt. layouts). After a write the 2020/200f frames arrive 2-13 s later, the 200e
+  # one up to ~30 s later, and on request only (median gap 5 min). Shows the newest of the four;
+  # c194 ("Zone 1 mode state", every 26 s, hypothesis: it followed the mode in every change seen)
+  # only while none of them has a value, e.g. after a restart of ebusd or HA.
+  - sensor:
+      - name: "Zone 1 mode (merged)"
+        unique_id: ebusd_zone1_mode_merged
+        icon: mdi:thermostat
+        state: >
+          {% set s = expand('sensor.heating_ebusd_energymgr_zone_1_mode',
+                            'sensor.heating_ebusd_energymgr_zone_1_mode_alt_layout',
+                            'sensor.heating_ebusd_energymgr_zone_1_mode_alt_layout_2',
+                            'sensor.heating_ebusd_energymgr_zone_1_mode_alt_layout_3')
+                     | rejectattr('state', 'in', ['unknown', 'unavailable'])
+                     | sort(attribute='last_reported', reverse=true) | list %}
+          {{ s[0].state if s else states('sensor.heating_ebusd_energymgr_zone_1_mode_state') }}
+
+  - climate:
+      - name: "Zone 1"
+        unique_id: ebusd_zone1_climate
+        # show a change at once, as the app does (owner 2026-10-15); the real values overwrite it
+        # when they arrive, and a write that is not confirmed reverts it (update_entity below)
+        optimistic: true
+        temperature_unit: "\u00b0C"
+        min_temperature: 10
+        max_temperature: 30
+        target_temperature_step: 0.5
+        precision: 0.1
+        hvac_modes: "{{ ['off', 'heat', 'auto'] }}"
+        hvac_mode: >
+          {{ {'Off': 'off', 'Manual': 'heat', 'Manual night': 'heat', 'Time program': 'auto'}
+             .get(states('sensor.zone_1_mode_merged'), none) }}
+        hvac_action: >
+          {% if is_state('sensor.zone_1_mode_merged', 'Off') %} off
+          {% elif is_state('binary_sensor.heating_ebusd_energymgr_zone_1_heat_request', 'on') %} heating
+          {% else %} idle {% endif %}
+        current_temperature: "{{ states('sensor.heating_ebusd_sensys_zone_1_room_temperature') | float(none) }}"
+        # in Manual the target is the comfort temperature (6271, confirmed ~10 s after a write); the
+        # room setpoint (6996) follows only after 18-21 s, and showing it made the dial jump back
+        # briefly when another source updated first. Elsewhere (schedule, override, off) 6996.
+        target_temperature: >
+          {% if is_state('sensor.zone_1_mode_merged', 'Manual') %}
+            {{ states('sensor.heating_ebusd_energymgr_zone_1_comfort_temperature') | float(none) }}
+          {% else %}
+            {{ states('sensor.heating_ebusd_energymgr_zone_1_room_setpoint') | float(none) }}
+          {% endif %}
+        preset_modes: "{{ ['none', 'override'] }}"
+        preset_mode: "{{ 'override' if is_state('binary_sensor.heating_ebusd_sensys_zone_1_override_active', 'on') else 'none' }}"
+        set_hvac_mode:
+          - action: script.zone1_set_mode
+            data:
+              mode: "{{ {'off': 'off', 'heat': 'manual', 'auto': 'scheduled'}[hvac_mode] }}"
+        set_temperature:
+          - if:
+              - condition: state
+                entity_id: sensor.zone_1_mode_merged
+                state: "Time program"
+            then:
+              - action: script.zone1_override
+                data:
+                  temperature: "{{ temperature }}"
+                  duration: { minutes: "{{ states('input_number.zone1_override_minutes') | int(60) }}" }
+            else:
+              - if:
+                  - condition: state
+                    entity_id: sensor.zone_1_mode_merged
+                    state: "Off"
+                then:
+                  - action: homeassistant.update_entity  # back to the real values
+                    target: { entity_id: climate.zone_1 }
+                  - action: persistent_notification.create
+                    data:
+                      title: "Zone 1"
+                      message: "Zone 1 is off: switch it to heat or auto before setting a temperature."
+                else:
+                  - action: script.ebusd_write_confirmed
+                    data:
+                      message: z1_comfort_temp_set
+                      payload: "{{ '%.1f' | format((temperature * 2) | round / 2) }}"
+                      entity: sensor.heating_ebusd_energymgr_zone_1_comfort_temperature
+                      expected: "{{ (temperature * 2) | round / 2 }}"
+        set_preset_mode:
+          - if: "{{ preset_mode == 'none' }}"
+            then:
+              - action: script.zone1_override_cancel
+            else:
+              - action: script.zone1_override
+                data:
+                  temperature: "{{ states('sensor.heating_ebusd_energymgr_zone_1_room_setpoint') | float(21) }}"
+                  duration: { minutes: "{{ states('input_number.zone1_override_minutes') | int(60) }}" }
+
+script:
+  ebusd_write_confirmed:
+    alias: "eBUS: write and confirm"
+    description: >
+      Publish one approved ebusd write, wait until the energy manager broadcasts the new value, and
+      retry up to 3 times (a write can lose arbitration on a busy bus). Notifies if it never shows.
+    mode: queued
+    max: 10
+    fields:
+      message: { description: "write message in config/writes.csv", required: true, example: z1_mode_set }
+      payload: { description: "value as ebusd expects it", required: true, example: "manual" }
+      entity: { description: "entity that shows the result", required: true }
+      expected: { description: "state of that entity when the write took effect", required: true }
+    sequence:
+      - repeat:
+          sequence:
+            - action: mqtt.publish
+              data:
+                topic: "ebusd/energymgr/{{ message }}/set"
+                payload: "{{ payload }}"
+            # the energy manager broadcasts the new value 3-8 s after the write, but the zone mode
+            # sensor decodes only its 200e answer, which came up to 29 s later (2026-10-14 16:24);
+            # 40 s avoids sending a write twice that already worked
+            - wait_template: >
+                {% set s = states(entity) %}
+                {{ s == expected | string
+                   or (s | float(none) is not none and expected | float(none) is not none
+                       and s | float == expected | float) }}
+              timeout: { seconds: 40 }
+          until: "{{ wait.completed or repeat.index >= 3 }}"
+      - if: "{{ not wait.completed }}"
+        then:
+          - action: homeassistant.update_entity  # back to the real values
+            target: { entity_id: climate.zone_1 }
+          - action: persistent_notification.create
+            data:
+              title: "eBUS write failed"
+              message: "{{ message }} = {{ payload }}: {{ entity }} did not change to {{ expected }} after 3 tries."
+
+  zone1_set_mode:
+    alias: "Zone 1: set mode"
+    mode: queued
+    max: 3
+    fields:
+      mode:
+        required: true
+        selector:
+          select:
+            options: ["off", "manual", "scheduled"]
+    sequence:
+      # as the app: before Manual or Off, 0990 = 0, then the mode. A running override is cancelled
+      # completely (flag and end time, as "return to scheduling" in the app), else the Sensys keeps
+      # it. The mode follows right away (owner 2026-10-15: no waiting for the Sensys); the Sensys's
+      # confirmation of the cancel is checked afterwards, at its next minute tick.
+      - variables:
+          override_running: "{{ mode in ['off', 'manual'] and is_state('binary_sensor.heating_ebusd_sensys_zone_1_override_active', 'on') }}"
+      - if: "{{ mode in ['off', 'manual'] }}"
+        then:
+          - action: mqtt.publish
+            data: { topic: ebusd/energymgr/z1_override_active_set/set, payload: "off" }
+          - if: "{{ override_running }}"
+            then:
+              - action: mqtt.publish
+                data: { topic: ebusd/energymgr/z1_override_clear/set, payload: "" }
+      - action: script.ebusd_write_confirmed
+        data:
+          message: z1_mode_set
+          payload: "{{ mode }}"
+          entity: sensor.zone_1_mode_merged
+          expected: "{{ {'off': 'Off', 'manual': 'Manual', 'scheduled': 'Time program'}[mode] }}"
+      - if: "{{ override_running }}"
+        then:
+          - wait_template: "{{ is_state('binary_sensor.heating_ebusd_sensys_zone_1_override_active', 'off') }}"
+            timeout: { seconds: 75 }
+          # the Sensys restored it: the full cancel (retries, then a notification)
+          - if: "{{ not wait.completed }}"
+            then:
+              - action: script.zone1_override_cancel
+
+  zone1_override:
+    alias: "Zone 1: temporary override"
+    description: >
+      Heat zone 1 to a temperature for a while, in Scheduled mode (as the app and the Sensys do).
+      The Sensys ends it by itself at the end time.
+    mode: single
+    fields:
+      temperature:
+        required: true
+        selector:
+          number:
+            min: 10
+            max: 30
+            step: 0.5
+            unit_of_measurement: "\u00b0C"
+      duration:
+        required: true
+        selector:
+          duration:
+    sequence:
+      - condition: state
+        entity_id: sensor.zone_1_mode_merged
+        state: "Time program"
+      - variables:
+          t: "{{ '%.1f' | format((temperature | float * 2) | round / 2) }}"
+          secs: >
+            {% set d = duration %}
+            {{ (d.days | default(0)) * 86400 + (d.hours | default(0)) * 3600
+               + (d.minutes | default(0)) * 60 + (d.seconds | default(0)) }}
+          # end time to the minute (the Sensys keeps it to the minute; the app offers quarters)
+          end: "{{ (now() + timedelta(seconds=secs | int)).replace(second=0, microsecond=0) }}"
+          end_payload: >
+            {% set e = end | as_datetime %}
+            {{ t }};{{ e.minute }};{{ e.hour }};{{ e.day }};{{ e.month }};{{ e.year % 100 }}
+      - repeat:
+          sequence:
+            # back to back, as the Sensys sends them (temperature, flag, end time)
+            - action: mqtt.publish
+              data: { topic: ebusd/energymgr/z1_override_temp_set/set, payload: "{{ t }}" }
+            - action: mqtt.publish
+              data: { topic: ebusd/energymgr/z1_override_active_set/set, payload: "on" }
+            - action: mqtt.publish
+              data: { topic: ebusd/energymgr/z1_override_end_set/set, payload: "{{ end_payload }}" }
+            # the Sensys adopts it at its next minute tick
+            - wait_template: "{{ is_state('binary_sensor.heating_ebusd_sensys_zone_1_override_active', 'on') }}"
+              timeout: { seconds: 75 }
+          until: "{{ wait.completed or repeat.index >= 2 }}"
+      - if: "{{ not wait.completed }}"
+        then:
+          - action: homeassistant.update_entity  # back to the real values
+            target: { entity_id: climate.zone_1 }
+          - action: persistent_notification.create
+            data:
+              title: "eBUS override failed"
+              message: "Zone 1 override {{ t }} \u00b0C until {{ (end | as_datetime).strftime('%H:%M') }} was not taken over by the Sensys."
+
+  zone1_override_cancel:
+    alias: "Zone 1: cancel override"
+    description: >
+      As "return to scheduling" in the app: flag off and the end time cleared, back to back. The
+      flag alone is not enough: the Sensys keeps an override while it has an end time and restores
+      it at its next minute tick (2026-10-14 15:59-16:01).
+    mode: single
+    sequence:
+      - repeat:
+          sequence:
+            - action: mqtt.publish
+              data: { topic: ebusd/energymgr/z1_override_active_set/set, payload: "off" }
+            - action: mqtt.publish
+              data: { topic: ebusd/energymgr/z1_override_clear/set, payload: "" }
+            # the Sensys confirms at its next minute tick (the sensor follows only the Sensys's own
+            # broadcasts, QQ 70, not ebusd's telegrams)
+            - wait_template: "{{ is_state('binary_sensor.heating_ebusd_sensys_zone_1_override_active', 'off') }}"
+              timeout: { seconds: 75 }
+          until: "{{ wait.completed or repeat.index >= 2 }}"
+      - if: "{{ not wait.completed }}"
+        then:
+          - action: homeassistant.update_entity  # back to the real values
+            target: { entity_id: climate.zone_1 }
+          - action: persistent_notification.create
+            data:
+              title: "eBUS override cancel failed"
+              message: "The Sensys did not end the zone 1 override."

@@ -1,0 +1,14 @@
+[Unit]
+Description=eBUS raw log capture (passive)
+After=network-online.target
+
+[Service]
+Type=simple
+User=ebus
+WorkingDirectory=/opt/ebusd-ariston-nimbus
+ExecStart=/opt/ebusd-ariston-nimbus/.venv/bin/ebus-capture --config /opt/ebusd-ariston-nimbus/config.local.toml
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,39 @@
+############################################################################################
+####                             WIFI GATEWAY RELATED MESSAGES                          
+#### address 7f: master #24                                                             
+#### address 84: slave #24                                                              
+#### address 70: master #4
+############################################################################################
+
+r,gateway,config_version,config_change_counter,,84,2001,d140,,,version
+
+r,gateway,wifi_switch,WiFi switch,,84,2001,0921,,,onoff
+w,gateway,wifi_switch,WiFi switch,,84,2020,0921,,,onoff
+
+r,gateway,ntp_switch,NTP switch,,84,2001,1421,,,onoff
+w,gateway,ntp_switch,NTP switch,,84,2020,1421,,,onoff
+
+r,gateway,internet_weather_switch,Internet Weather switch,,84,2000,0488,,,ignore_1;onoff
+w,gateway,internet_weather_switch,Internet Weather switch,,84,2020,0488,,,onoff
+r,ignored,internet_weather_switch_other,Internet Weather switch,,84,2001,0488,,,onoff
+
+r,gateway,wifi_status,WiFi status,,84,2001,cc4b,,,wifi_state
+
+# Read wifi signal on an occasional basis
+r5,gateway,wifi_signal,WiFi signal strength,,84,2001,c3f0,,,percent
+
+r,gateway,activation_state,activation state,,84,2001,c4f0,,,activation_state
+r,gateway,software_update,software update status,,84,2001,c89c,,,sw_update_status
+
+# Individual read for internet weather temperature but value is broadcast when updated so not needed
+r,ignored,internet_weather_temp,internet weather temeperature,,84,2001,7617,,,temperature
+r,ignored,internet_weather_code,internet weather temeperature,,84,2001,c19a,,,weather
+
+# Internet Weather information broadcast
+b,gateway,internet_weather,weather information,7f,fe,2010,7617,,,temperature;ignore_3;weather
+
+# Regularly performed reads 
+r,ignored,read_information_1,read information,70,84,2000,cc4bd140c89ccc9a,,,ignore_1;wifi_state:wifi_state;version:version_counter;sw_update_status:sw_update_status;minutes:value_cc9a
+r,ignored,read_information_2,read information,70,84,2000,c0f2c5f014210921,,,ignore_1;minutes:value_c0f2;minutes:value_c5f0;onoff:ntp_switch;onoff:wifi_switch
+r,ignored,read_information_3,read information,70,84,2000,c0f2c5f0,,,ignore_1;minutes:value_c0f2;minutes:value_c5f0
+r,ignored,read_information_4,read information,70,84,2000,d140c89ccc9a,,,ignore_1;version:version_counter;sw_update_status:sw_update_status;minutes:value_cc9a

@@ -1,0 +1,53 @@
+# Whitelist of the reads ebusd sends itself (M2, path 2: ebusd polls; owner decision 2026-10-11).
+# scripts/gen_config.py turns each entry into one `r` line in config/polled.csv, and
+# tests/test_polled.py fails if the config holds any other active `r` line (or any `w` line).
+# Changing this file changes what is sent on the bus: the owner signs off every change.
+#
+# Heat pump diagnostics that no other master reads on the bus (Sensys menus 17.11-17.13), plus the
+# condenser outlet temperature, which the energy manager reads only every 6-38 min.
+# Target: the heat pump (1e). The 45 and 4f families are heat pump registers on this bus (the energy
+# manager reads 0845, 0c45, 1945 and 7c4f from 1e); the heat pump answered all four reads with a
+# full mask from the first poll on (2026-10-11). A reply with mask 00 would mean "not available".
+# At most three registers per read (ebusd keys a message on at most 6 id bytes).
+# Since 2026-10-12 (owner): no poll priority, so ebusd never polls these by itself. Home Assistant
+# requests them over MQTT (ha/polled_reads.yaml: once a minute (second 19) while the heat pump status is not
+# Off / Stand by / Soft Fail Mode, and once on every status change); each request is one bus read.
+# Only the users ebusd and HA may publish below ebusd/ (EMQX ACL, checked by ebus-mqttacl).
+# priority: null = read on request only; 1-9 = ebusd polls it (one poll every --pollinterval s).
+#
+# Fields: id, name, type (ebusd; "values" = the value list in registers/registers.yaml), divisor, unit,
+# label. Types follow the width rule; scales and units
+# from the owner's menu sheet (pressure raw 0x0090 = 14.4 bar).
+
+- name: hp_poll_pressures
+  target: "1e"
+  priority: null
+  fields:
+    - {id: 6c4f, name: evaporator_pressure, type: SIN, divisor: 10, unit: bar, label: "Evaporator pressure"}
+    - {id: 6d4f, name: condenser_pressure, type: SIN, divisor: 10, unit: bar, label: "Condenser pressure"}
+    - {id: 6e4f, name: fan1_rpm, type: SIN, unit: rpm, label: "Fan 1 speed"}
+
+- name: hp_poll_compressor
+  target: "1e"
+  priority: null
+  fields:
+    - {id: 6f4f, name: fan2_rpm, type: SIN, unit: rpm, label: "Fan 2 speed"}
+    - {id: "1145", name: compressor_on_onoff, type: onoff, label: "Compressor on"}
+    - {id: "1245", name: compressor_preheating_onoff, type: onoff, label: "Compressor preheating"}
+
+- name: hp_poll_valve_fans
+  target: "1e"
+  priority: null
+  fields:
+    - {id: "1345", name: four_way_valve, type: values, label: "4-way valve heat/cool"}
+    - {id: "1445", name: fan1_status_onoff, type: onoff, label: "Fan 1 running"}
+    - {id: "1545", name: fan2_status_onoff, type: onoff, label: "Fan 2 running"}
+
+- name: hp_poll_heater_protection
+  target: "1e"
+  priority: null
+  fields:
+    - {id: "1645", name: base_panel_heater_onoff, type: onoff, label: "Base panel heater"}
+    - {id: "1045", name: inverter_shutoff_protection_onoff, type: onoff, label: "Inverter shut-off protection"}
+    - {id: "7117", name: hp_condenser_outlet_temperature_alt, type: SIN, divisor: 10, unit: "°C",
+       label: "Condenser outlet temperature (alt. layout)"}

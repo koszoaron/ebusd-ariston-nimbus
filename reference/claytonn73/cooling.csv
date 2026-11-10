@@ -1,0 +1,40 @@
+
+############################################################################################
+####                             COOLING SETTINGS AND MESSAGES                          
+#### address 13: master #12                                                             
+#### address 18: slave #12                                                             
+#### address 70: master #4   
+############################################################################################
+
+# Cooling related settings and messages not investigated to any great degree as not present on system
+
+r,cooling,status,Cooling Status,,fe,2001,0f23
+b,cooling,status,Cooling Status,13,fe,200e,0f23,,,onoff
+w,cooling,status,Cooling Status,70,fe,2020,0f23,,,onoff
+
+b,ignored,cooling_status,Cooling Status,13,fe,2010,0f23,,,onoff;ignore_3;temperature:z1_day_temp;ignore_3;temperature:z1_night_temp
+
+# Cooling mode activation (1.8.0)
+r,cooling,activation,Cooling Activation,,fe,2001,1023
+b,cooling,activation,Cooling Activation,13,fe,200e,1023,,,onoff
+
+# Cooling FlowT HP Offset (1.8.2)
+r,cooling,offset_temperature,Cooling Offset Temperature,,18,2000,7f2b,,,ignore_1;temperature
+w,cooling,offset_temperature,Cooling Offset Temperature,,18,2020,7f2b,,,temperature
+r,cooling,offset_temperature_limits,Cooling Offset Temperature Limits,,18,2001,7f2b,,,temperature_min_max
+
+# Humidity Control Threshold (1.8.3)
+r,cooling,humidity_control_threshold,Cooling Humidity Control Threshold,,18,2000,cc8f,,,ignore_1;percent:setting
+w,cooling,humidity_control_threshold,Cooling Humidity Control Threshold,,18,2020,cc8f,,,percent:setting
+r,cooling,humidity_control_threshold_limits,Cooling Humidity Control Threshold Limits,,18,2001,cc8f,,,percent_min_max
+
+# Humidity Control Hysteresis (1.8.4)
+r,cooling,humidity_control_hysterisis,Cooling Humidity Control Hysteresis,,18,2000,cd8f,,,ignore_1;percent:setting
+w,cooling,humidity_control_hysterisis,Cooling Humidity Control Hysteresis,,18,2020,cd8f,,,percent:setting
+r,cooling,humidity_control_hysterisis_limits,Cooling Humidity Control Hysteresis Limits,,18,2001,cd8f,,,percent_min_max
+
+b,cooling,temperatures,Cooling Temperatures,,fe,2020,6a75,,,temperature:z1_cool_temp;ignore_2;temperature:z2_cool_temp;ignore_2;temperature:z3_cool_temp;ignore_2;temperature:cooling_setpoint_temp
+b,cooling,slope,Cooling Slopes,,fe,2020,7577,,,ignore_4;slope:z1;ignore_2;slope:z2;ignore_2;slope:z3
+
+# Cooling running hours (h/10) (1.14.6)
+r,cooling,heatpump_operation_hours,Heatpump Cooling Operating Hours,,18,2000,54d1,,,ignore_1;hours

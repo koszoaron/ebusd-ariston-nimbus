@@ -1,0 +1,376 @@
+# Hand-curated findings from the spring captures. Merged by scripts/build_registers.py.
+# Every entry is a hypothesis unless the evidence says otherwise.
+- {device: heatpump, id: "6e13", name: flow, unit: l/min, scale: 0.1, status: confirmed,
+   evidence: "owner confirmed: raw / 10 is l/min"}
+- {device: heatpump, id: "c446", name: compressor_freq_cap, status: confirmed,
+   evidence: "compressor frequency cap, not a target: 75 at night, 100 by day while the actual frequency (cb46) ran 18-28 Hz. 2026-10-07/08 capture: 100 to 75 at 20:00:47, back at 05:59:45, matching the owner's 20:00-06:00 quiet-mode schedule; confirmed by the owner at the M0 review. Unit (Hz or %) still open"}
+- {device: heatpump, id: "1ef3", name: quiet_mode_active, status: confirmed,
+   evidence: "0 to 1 at 20:00:47 and back at 05:59:46 on 2026-10-07/08, together with c446, matching the owner's 20:00-06:00 quiet-mode schedule; confirmed by the owner at the M0 review"}
+- {device: heatpump, id: "cd46", name: requested_mode, status: hypothesis,
+   evidence: "written by energymgr: 0 idle, 3 heating; ca46 reads the actual mode (15 idle, 3 heating)"}
+- {device: heatpump, id: "d09c", name: requested_state, status: hypothesis,
+   evidence: "written by energymgr: 0 idle, 1 pump only, 10 compressor"}
+- {device: heatpump, id: "6a47", name: flow_setpoint_write, status: hypothesis,
+   evidence: "written by energymgr every 5 s; equals 6047"}
+- {device: energymgr, id: "c94b", name: energymgr_status, status: hypothesis,
+   evidence: "broadcast status: 0 idle, 1 pump only, 2 heating (spring captures); used by the census as operating state"}
+- {device: heatpump, id: "7c4f", name: hp_power, unit: W, scale: 1, status: confirmed,
+   evidence: "outdoor unit electrical power in W, answered by the heat pump (1e) to energymgr 2000 reads every ~25.6 s. 2026-10-07/08 capture against the Shelly total: r = 0.993 over 3453 samples, best lag 2-4 s (below the 5 s meter resolution); while running Shelly = 0.944 x 7c4f + ~240 W (indoor unit, pump, kit, and possibly outdoor fan/electronics not counted by 7c4f). Confirmed by the owner at the M0 review"}
+- {device: heatpump, id: "6347", status: hypothesis,
+   evidence: "carries the same upstream label as 7c4f and stays 0"}
+- {device: energymgr, id: "759e", name: buffer_temp, status: hypothesis,
+   evidence: "the real buffer sensor"}
+- {device: energymgr, id: "769e", status: hypothesis,
+   evidence: "mirrors the heat pump return temperature (7710) one cycle later; not a buffer sensor"}
+- {device: energymgr, id: "779e", status: hypothesis,
+   evidence: "always 0"}
+- {device: energymgr, id: "d140", name: config_version_counter, status: hypothesis,
+   evidence: "configuration counter; energymgr and mfk agree, the gateway keeps its own"}
+- {device: energymgr, id: "6197", status: hypothesis,
+   evidence: "per-zone flow target (6197-6797), not hot water target as labelled upstream"}
+- {device: energymgr, id: "6c96", status: hypothesis,
+   evidence: "room setpoint zone 4 (6c96-6f96 are zones 4-7)"}
+# --- M1: run-hour and cycle counters (energy manager; 40-5f class, 2 bytes per id) ---
+# The Sensys menu 17.9 shows these divided by 10 ("h/10", "n/10"); the bus value is the plain count.
+- {device: energymgr, id: "40d8", name: hp_compressor_starts, unit: "", scale: 1, status: confirmed,
+   evidence: "M1: 19440 -> 19443 over the M0 capture, one step after each of the three compressor runs (20:16, 20:43, 07:50); so the bus value counts starts and the Sensys shows it /10 (menu 17.9.1 'HP on cycles (n/10)': 1884 for 18844). Key register for the cycling analysis"}
+- {device: energymgr, id: "41d8", status: hypothesis,
+   evidence: "M1: always read together with 40d8 and always 0; probably the high word of a 32-bit start counter (as 53d9 for 52d9)"}
+- {device: energymgr, id: "40d1", name: hp_run_hours, unit: h, scale: 1, status: confirmed,
+   evidence: "M1: 8085 -> 8086 over the M0 capture, which had about 50 min of compressor running; tenths of an hour would have stepped about 8 times. Sensys menu 17.9.0 'HP running hours (h/10)' shows the value /10"}
+- {device: energymgr, id: "55d1", name: hp_heating_hours, unit: h, scale: 1, status: confirmed,
+   evidence: "M1: 11856 -> 11857 over the M0 capture (one hour boundary). Sensys menu 17.9.8 'Heating running hours (h/10)' shows the value /10. Larger than 40d1 (compressor hours), so it probably counts heating-mode time, not compressor time (hypothesis)"}
+- {device: energymgr, id: "47d1", name: hp_defrost_hours, unit: h, scale: 1, status: confirmed,
+   evidence: "Sensys menu 17.9.6 'HP defrost hours (h/10)'; reads 85 throughout the M0 capture (no defrost in it)"}
+- {device: energymgr, id: "54d1", name: hp_cooling_hours, unit: h, scale: 1, status: confirmed,
+   evidence: "Sensys menu 17.9.7 'Cooling running hours (h/10)'; 0 (cooling unused)"}
+- {device: energymgr, id: "56d1", name: hp_dhw_hours, unit: h, scale: 1, status: confirmed,
+   evidence: "Sensys menu 17.9.9 'DHW running hours (h/10)'; 0 (no DHW)"}
+- {device: energymgr, id: "5ad1", status: hypothesis,
+   evidence: "M1: 12333 -> 12334 at the same read as 55d1 (23:15 on 2026-10-07); an hour counter like 55d1, larger. Upstream (owner table) 'buffer_heat_charge_time'"}
+- {device: energymgr, id: "52d9", name: hp_energy_consumed_lo, unit: "10 kJ", scale: 1, status: confirmed,
+   evidence: "low word of a 32-bit counter with 53d9: electrical energy of the outdoor unit in units of 10 kJ (2.778 Wh), read unsigned. M1: rises only while the compressor runs, 0.35 counts per Wh of 7c4f. Confirmed 2026-10-08 22:40 against the cloud consumption series (consSequencesApi8, day series, 2-hour slots at the gateway's 2-hourly reads of 52d9): steps of +196 (21:59), +71 (07:59), +88 (09:59) x 2.778 Wh = 544/197/244 Wh, the cloud reports 0.544/0.197/0.244 kWh. Lifetime with 53d9 = 48: 3174139 counts = 8817 kWh. The app's 'last 24 hours' figure (544 Wh at 14:00, 250 Wh at 22:31) shows a single slot of this series"}
+- {device: energymgr, id: "53d9", name: hp_energy_consumed_hi, status: confirmed,
+   evidence: "high word of the 52d9 energy counter (10 kJ units); 48 throughout. Confirmed with 52d9 against the cloud consumption series"}
+- {device: energymgr, id: "56d9", status: hypothesis,
+   evidence: "M1: read as the pair 56d9+57d9 next to 52d9 and 54d9; constant 408 (57d9 = 0). Likely another energy counter of the same block for an unused mode, or a stale total"}
+# --- M1: heating curve and temperatures (energy manager) ---
+- {device: energymgr, id: "6197", name: z1_flow_target_calc, unit: "°C", scale: 0.1, status: hypothesis,
+   evidence: "M1: computed zone 1 flow target. Over 1659 unclamped broadcasts of the M0 capture it equals 27.0 + 0.5 x (setpoint 6996 - outdoor 7647) + 10 x (setpoint - room 7118) within 0.045 K (sd), clipped to the zone limits 20.0/45.0 (6171/6071). 0.5 is the zone 1 slope (6a71), 27.0 = 20 + offset 7.0 (6471); the factor 10 per K room error goes with room influence 20 (c279). Updated continuously, also without a heat request. Not an upstream hot-water target"}
+- {device: energymgr, id: "6047", name: flow_setpoint, unit: "°C", scale: 0.1,
+   evidence: "M1: follows 6197 (one broadcast later) while a heat request is active (c94b 2/22) and holds its last value otherwise (22.2 from 21:01 to 07:49 on 2026-10-07/08). Written to the heat pump as 6a47"}
+- {device: energymgr, id: "7647", name: outdoor_temp, unit: "°C", scale: 0.1, status: confirmed,
+   evidence: "M1: broadcast every 2 min; the outdoor temperature the regulation uses (the 6197 curve fits it to 0.045 K, the heat pump's own air sensor 7810 only to 0.17 K). Not a delayed or filtered copy of 7810 (best lag 0, sd 1.2 K). Owner 2026-10-08: a separate outdoor probe is wired to the energy manager, mounted near the heat pump (installer placement, should be on the north wall). Sensys showed 27 C at about 14:15 while 7647 read 27.3-27.6 and 7810 28.0. Cloud OutsideTemp 21.0 at 19:42 was fetched as 2000 7647 = 218 (21.8): the cloud seems to truncate to whole degrees"}
+- {device: energymgr, id: "6310", status: hypothesis,
+   evidence: "M1: read by the gateway every 30 min with 6610 (always 0). 25.3-35.6 in the M0 capture; matches no heat pump temperature or the buffer at the same moment (sd 19-25 K). Upstream (elco) 'Heating Water Flow Temp'; perhaps a house-side flow probe in the indoor unit (to check on the Sensys)"}
+- {device: energymgr, id: "6610", status: hypothesis,
+   evidence: "M1: always 0; upstream (elco) 'Heating Water Return Temp', probably no sensor fitted"}
+- {device: energymgr, id: "c279", description: "Room influence proportional (z1)", status: confirmed,
+   evidence: "Sensys menu 4.2.4: 0 (no influence) to 20 (maximum), manual p. 71. Reads 20. M1: the 6197 fit gives 10 K of flow target per K of room error at 20, so probably setting/2 K per K (hypothesis, one setting value seen)"}
+# --- M1: operating states (energy manager and heat pump) ---
+- {device: energymgr, id: "0120", name: heating_enabled, status: confirmed,
+   evidence: "M1: 0 to 1 at 2026-10-07 17:35:11, when the owner switched 'heat only' on (operating log 17:35:27, owner's clock). Upstream heating_status (onoff)"}
+- {device: energymgr, id: "c94b", name: energymgr_status, status: hypothesis,
+   evidence: "M1 values: 0 idle; 2 heat pump charging (d09c = 10); 22 heat request active while the heat pump does not charge: 3-6 s before the pump starts, and from the charge end at 20:52:56 until the request ended at 21:01:09. Fits PR #53 'buffer_heating' read as 'zone served from the buffer'. Value 1 (pump only, spring captures) not seen in M0. Upstream hesselonline enum otherwise (0 standby, 1 antifreeze, 2 heating cycle, ...)"}
+- {device: heatpump, id: "d09c", name: requested_state, status: hypothesis,
+   evidence: "written by energymgr. M1: 0 off, 2 circulator only (start and the 3 min run-on after a charge), 10 compressor; the earlier reading '1 pump only' is not seen in M0"}
+- {device: heatpump, id: "ca46",
+   evidence: "M1 values: 15 idle, 3 heating, 11 compressor pause of exactly 3 min (20:39:59-20:43:03) while the request stayed on, 1 for the 3 min run-on after the energy manager ends a charge. Upstream hesselonline enum: 1 Stand_by, 3 Heating, 11 Timeguard (fits), 15 Soft_fail (does not fit an idle state; label to be checked)"}
+- {device: energymgr, id: "ca46", status: hypothesis,
+   evidence: "M1: copy of the heat pump's ca46, 2-6 s later"}
+- {device: heatpump, id: "d84b", status: hypothesis,
+   evidence: "M1: 19 idle, 12 at compressor start, 13 after ~35 s, 14 after ~40 s, 15 after ~4 min (steady run), 11 during the timeguard pause, 1 during run-on. A start-up phase counter of the heat pump; upstream PR #53 Param_684b 'short_count' is a different id"}
+- {device: energymgr, id: "c74b", status: hypothesis,
+   evidence: "M1: sub-state of the energy manager: 190 idle, 191 request pending (before the pump, and after run-on with the request still active), 178 circulator starting, 161 compressor charging, 74 charge ended (run-on). Not a plain bit field"}
+- {device: energymgr, id: "d99c", status: hypothesis,
+   evidence: "M1: 1 idle, 2 while the buffer is charged by the heat pump (set 2-20 s after the start, cleared at the charge end); same timing as 1b45"}
+- {device: energymgr, id: "1b45", name: buffer_charge_request, status: hypothesis,
+   evidence: "M1: 1 from the heat request until the energy manager ends the charge (20:14:59-20:52:59, 07:49:33-08:06:42)"}
+- {device: heatpump, id: "6247", status: hypothesis,
+   evidence: "M1: 19 idle, 0 from about 25 s after the circulator starts until about 15 s after it stops; read with compressor temperatures (upstream compressor_info2). Meaning open"}
+- {device: heatpump, id: "c33e", status: hypothesis,
+   evidence: "M1: written by energymgr every 5 s; falls by 4-5 per write (about 1 per second) from ~255 and is refilled about every 30 s (range 218-255). A countdown/keepalive for the heat pump rather than a measurement; not worth an HA entity"}
+# --- M1: cloud reads (ebus-cloud properties, 2026-10-08 19:42:17-19:42:28) ---
+# The Light Gateway fetches every cloud dataItems/get live over the bus (35 requests in the 10.6 s
+# of the cloud call, in the order of the cloud's item list). Cloud name = value, then the register.
+- {device: energymgr, id: "c679", name: z1_mode, status: confirmed,
+   evidence: "cloud ZoneMode (zone 1) = 2, fetched as 2001 c679 -> 2 (min 0, max 3) in its list position; cloud menu U_0.0 'Zone 1' (0..3). Library enum ZoneMode: 0 off, 1 manual night, 2 manual, 3 time program. mferi87 calls it 'Z1 Heat Req Mode' (0 standard, 1 no time program, 2 forced); the cloud's heat request mode is ce79, so that label is taken as wrong. tweetgeek and ysard use the same 'heat request mode' enum; both readings agree that 2 means 'not on the time program'. Owner 2026-10-08 ~21:45: zone 1 is in manual mode now, so value 2 = manual is confirmed. The web page offers 2 Manual and 3 Time program for zone 1 (U0_0), matching the cloud enum; 0/1 (off, manual night) are the library's labels, not yet seen"}
+- {device: energymgr, id: "712b", unit: min, scale: 1, status: confirmed,
+   evidence: "cloud AntilegionellaFreq = 481 h, bus 712b = 28860 = 481 h in minutes (min 1440, max 28860)"}
+- {device: energymgr, id: "0220", name: dhw_enabled, status: hypothesis,
+   evidence: "cloud PlantMode = 2 (heating only) was fetched as 2001 0120 (1), 0220 (0), 0f23 (0): heating on, DHW off, cooling off. 0220 = DHW enable (upstream dhw_status)"}
+- {device: energymgr, id: "0f23", name: cooling_enabled, status: hypothesis,
+   evidence: "fetched with 0120/0220 for cloud PlantMode (heating only = 2); 0 throughout; upstream cooling_status"}
+- {device: energymgr, id: "0520", name: auto_thermoregulation, status: confirmed,
+   evidence: "cloud AutomaticThermoregulation = 1 at the list position of 2001 0520 (1); Sensys menu 'AUTO function'"}
+- {device: energymgr, id: "0b20", name: antilegionella_enabled, status: confirmed,
+   evidence: "cloud AntilegionellaOnOff = 1 at the list position of 2001 0b20 (1); Sensys menu 'Thermal cleanse function'"}
+- {device: energymgr, id: "0320", name: quiet_mode_enabled, status: confirmed,
+   evidence: "cloud IsQuite = 1 at the list position of 2001 0320 (1, read from 18); Sensys menu 'Quiet mode activation HHP'. The schedule 20:00-06:00 acts through heatpump 1ef3/c446"}
+- {device: energymgr, id: "c028", status: hypothesis,
+   evidence: "cloud DhwMode = 0 at the list position of 2001 c028 (0, min 0, max 5); Sensys menu 'Comfort Function' (DHW)"}
+- {device: energymgr, id: "6271", name: z1_comfort_temp, status: confirmed,
+   evidence: "cloud ZoneComfortTemp / VirtComfortTemp = 22.0, bus 6271 = 220 (min 100, max 300)"}
+- {device: energymgr, id: "6371", name: z1_economy_temp, status: confirmed,
+   evidence: "cloud ZoneEconomyTemp / VirtReducedTemp = 21.0, bus 6371 = 210 (min 100, max 300); Sensys menu 'T Night'"}
+- {device: energymgr, id: "6996", name: z1_desired_temp, status: confirmed,
+   evidence: "cloud ZoneDesiredTemp = 22.0, bus 6996 = 220"}
+- {device: sensys, id: "7118", name: z1_room_temp, unit: "°C", scale: 0.1, status: confirmed,
+   evidence: "cloud ZoneMeasuredTemp = 22.7, bus 7118 = 227 (broadcast by the Sensys, answered to the gateway's request)"}
+- {device: energymgr, id: "6471", name: z1_heat_curve_offset, status: confirmed,
+   evidence: "cloud HeatingFlowOffset / VirtTempOffsetHeat = 7.0, bus 6471 = 70 (min -70, max 70)"}
+- {device: energymgr, id: "6571", name: z1_fixed_flow_temp, status: confirmed,
+   evidence: "cloud HeatingFlowTemp / VirtTempSetpointHeat = 25.0, bus 6571 = 250 (min 200, max 450)"}
+- {device: energymgr, id: "7071", name: z1_cooling_flow_temp, status: confirmed,
+   evidence: "cloud CoolingFlowTemp = 7.0, bus 7071 = 70 (min 70, max 120)"}
+- {device: energymgr, id: "7571", name: z1_cooling_curve_offset, status: confirmed,
+   evidence: "cloud CoolingFlowOffset = 0, bus 7571 = 0 (min -25, max 25) at its list position"}
+- {device: energymgr, id: "6126", name: dhw_comfort_temp, status: confirmed,
+   evidence: "cloud DhwTemp and DhwTimeProgComfortTemp = 35.0, bus 6126 = 350 (min 350, max 700), fetched twice in those list positions"}
+- {device: energymgr, id: "6226", name: dhw_economy_temp, status: confirmed,
+   evidence: "cloud DhwTimeProgEconomyTemp = 35.0, bus 6226 = 350 (min 100, max 350)"}
+- {device: energymgr, id: "7017", name: dhw_storage_temp, status: confirmed,
+   evidence: "cloud DhwStorageTemperature = 0, bus 7017 = 0 (no DHW tank)"}
+# --- M1: cloud menu items (registers/cloud_menu.csv; sweep of ids 1-130 on 2026-10-08 20:11-20:25) ---
+- {device: energymgr, id: "6426", name: frost_protection_temp, unit: "°C", scale: 0.1, status: confirmed,
+   evidence: "cloud menu T_4.0.3/T_5.0.3/T_6.0.3 'Zone frost temperature' 5.0 (2..15); each read fetched 2001 6426"}
+- {device: energymgr, id: "7810", status: hypothesis,
+   evidence: "cloud menu T_17.10.0 'Outside air temperature' (heat pump menu) was fetched as 2001 7810 from the energy manager, which mirrors the heat pump's air sensor"}
+- {device: energymgr, id: "dc28", status: confirmed,
+   evidence: "cloud menu T_17.2.0 'Hydraulic scheme' = 5 (0..5), fetched as 2001 dc28"}
+- {device: gateway, id: "c19a", name: online_weather_code, status: hypothesis,
+   evidence: "cloud menu T_19.1.6 'On line weather data' = 9, equal to the gateway's c19a broadcast; no bus read for it"}
+- {device: gateway, id: "7617", name: online_outdoor_temp, status: hypothesis,
+   evidence: "cloud menu T_19.1.5 'On line outdoor temperature' 3276 (not available), as the gateway's 7617 broadcast (7fff)"}
+- {device: energymgr, id: "6a96", name: z2_desired_temp, status: confirmed,
+   evidence: "cloud menu T_5.3.1 'Room T setpoint' 22.5, fetched 2000 6a96 = 225"}
+- {device: energymgr, id: "6b96", name: z3_desired_temp, status: confirmed,
+   evidence: "cloud menu T_6.3.1 'Room T setpoint' 22.5, fetched 2000 6b96 = 225"}
+- {device: energymgr, id: "ce79", name: z1_heat_request_mode, status: confirmed,
+   evidence: "cloud menu T_4.2.9 'Heat request mode' = 0, fetched as 2001 ce79 in list order (zones 2/3: ce7a/ce7b)"}
+- {device: energymgr, id: "c079", name: z1_thermoregulation, status: confirmed,
+   evidence: "cloud menu T_4.2.1 'Thermoregulation' = 4, fetched as 2001 c079 (zones 2/3: c07a/c07b = 1). Owner sheet menu 4.2.1"}
+- {device: energymgr, id: "1d11", status: confirmed,
+   evidence: "cloud menu T_17.14.6 'HV input 1' = 0, fetched as 2000 1d11; T_17.1.0 'HV input 1' = 1 is c92a (2001 c92a)"}
+# --- M1: hints from mferi87/Ariston-eBUSd-Home-Assistant (no licence: names used as hints only, file not copied) ---
+# Multifunction Kit (slave fc) menu 11 registers. Never seen on this bus (nobody polls them); reading them needs M2.
+- {device: mfk, id: "1011", status: hypothesis, description: "Input 1 Temperature (mferi87)", evidence: "mferi87: 11.1.0 Input 1 Temperature (UCH); not seen on the bus"}
+- {device: mfk, id: "1111", status: hypothesis, description: "Input 2 Temperature (mferi87)", evidence: "mferi87: 11.1.1 Input 2 Temperature (UCH); not seen on the bus"}
+- {device: mfk, id: "1211", status: hypothesis, description: "Input 3 Temperature (mferi87)", evidence: "mferi87: 11.1.2 Input 3 Temperature (UCH); not seen on the bus"}
+- {device: mfk, id: "1311", status: hypothesis, description: "Output 1 Status (mferi87)", evidence: "mferi87: 11.1.3 Output 1 Status (onoff). Relay 1 switches the circulation pump on a zone 1 heat request here, so this is a candidate for the house-side pump state; not seen on the bus"}
+- {device: mfk, id: "1411", status: hypothesis, description: "Output 2 Status (mferi87)", evidence: "mferi87: 11.1.4 Output 2 Status (onoff); not seen on the bus"}
+- {device: mfk, id: "1511", status: hypothesis, description: "Output 3 Status (mferi87)", evidence: "mferi87: 11.1.5 Output 3 Status (onoff); not seen on the bus"}
+- {device: mfk, id: "2011", status: hypothesis, description: "Diff thermostat turn-on delta (mferi87)", evidence: "mferi87: 11.2.0 Diff thermostat turn-on delta (UCH, 1 byte: first byte 20-3f is a width class not yet seen here)"}
+- {device: mfk, id: "2111", status: hypothesis, description: "Diff thermostat turn-off delta (mferi87)", evidence: "mferi87: 11.2.1 Diff thermostat turn-off delta (UCH)"}
+- {device: mfk, id: "2211", status: hypothesis, description: "Input 1 maximum temp (mferi87)", evidence: "mferi87: 11.2.2 Input 1 maximum temp (UCH)"}
+- {device: mfk, id: "2311", status: hypothesis, description: "Input 2 maximum temp (mferi87)", evidence: "mferi87: 11.2.3 Input 2 maximum temp (UCH)"}
+- {device: mfk, id: "2411", status: hypothesis, description: "Input 1 minimum temp (mferi87)", evidence: "mferi87: 11.2.4 Input 1 minimum temp (SCH)"}
+- {device: mfk, id: "3011", status: hypothesis, description: "Thermostat target temp (mferi87)", evidence: "mferi87: 11.3.0 Thermostat target temp (UCH)"}
+- {device: mfk, id: "3111", status: hypothesis, description: "Thermostat hysteresis (mferi87)", evidence: "mferi87: 11.3.1 Thermostat hysteresis (UCH)"}
+- {device: energymgr, id: "6297", description: "z2 computed flow target (mferi87)", status: hypothesis,
+   evidence: "mferi87: 'Z2 Computed Target' (the zone 2 sibling of 6197, which mferi87 also calls 'Z1 Computed Target', agreeing with the M1 curve fit). Reads 58.0 here (zone 2 unused)"}
+# --- M1: tweetgeek/ebusd-configuration-ariston-nimbus (Nimbus 50S, GPL-3.0; labels via ysard's README) ---
+- {device: energymgr, id: "c079",
+   evidence: "enum per ysard (via tweetgeek): 0 fixed temperature, 1 basic on/off, 2 outdoor only, 3 room only, 4 outdoor and room. Zone 1 = 4 fits the M1 curve fit, which has both an outdoor and a room term; zones 2/3 = 1"}
+- {device: energymgr, id: "d746", status: hypothesis,
+   evidence: "ysard (via tweetgeek): dhw_comfort_zones; broadcast in 2010 d346/d746/da46/dc46 here"}
+# --- M1: buffer settings named by claytonn73 (values from the M0 capture) ---
+- {device: energymgr, id: "672e", status: hypothesis,
+   evidence: "claytonn73: buffer setpoint hysteresis; reads 5.0 K here (2020 settings broadcasts). At the 2026-10-08 07:49 charge start the buffer 759e was 28.1 against the target 6197 33.0 (4.9 K below), but the zone heat request 0191 started at the same moment, so the trigger is not separable yet. Key setting for the cycling goal"}
+- {device: energymgr, id: "692e", status: hypothesis,
+   evidence: "claytonn73: buffer comfort temperature; 40.0 here. The charges in M0 ended at the flow target (33.8), not at 40, so with buffer setpoint mode 1f23 = 1 the buffer apparently follows the flow target (hypothesis)"}
+- {device: energymgr, id: "1f23", status: hypothesis,
+   evidence: "claytonn73: buffer setpoint mode; 1 here (enum to be checked)"}
+# --- M1: Ariston NET web page "other settings" (registers/web_menu.csv: labels, limits, option lists; no values) ---
+- {device: energymgr, id: "1f23", name: buffer_setpoint_mode, status: hypothesis,
+   evidence: "web menu 6.10.5 'Buffer setpoint mode': 0 Fixed, 1 Variable; claytonn73 names 1f23 buffer_setpoint_mode; reads 1 = Variable here. Fits M1: the charges ended at the flow target (33.8), not at the fixed comfort setpoint 692e = 40.0"}
+- {device: energymgr, id: "692e", name: buffer_comfort_setpoint_heating, unit: "°C", scale: 0.1,
+   evidence: "web menu 6.10.1 'Buffer comfort setpoint heating' (20-70 °C); 40.0 here; with setpoint mode Variable it does not end the charge"}
+- {device: energymgr, id: "1c22", name: ch_mode,
+   evidence: "web menu 6.3.4 'CH mode': 0 Green Mode, 1 Standard; the Sensys sheet lists 1c22 as 'CH mode'; reads 0 = Green Mode here"}
+- {device: energymgr, id: "c028",
+   evidence: "web menu 6.9.2 'Comfort Function' (DHW): 0 Disabled, 1 Time Based, 2 Always active, 3 HC-HP, 4 HC-HP 40, 5 Green Mode; reads 0"}
+# --- M1: values from the owner's copy of the Ariston NET settings page (2026-10-08 ~23:30), compared with the bus ---
+- {device: energymgr, id: "6471", status: confirmed,
+   evidence: "web settings page 6.3.0.1 (labelled 'T set Z1', the heating curve offset; range -7..7): shows 7, equal to the bus value (registers/web_menu.csv, node U6_3_0_1)"}
+- {device: energymgr, id: "6472", status: confirmed,
+   evidence: "web settings page 6.3.0.3 zone 2 offset: shows 0, equal to the bus value (registers/web_menu.csv, node U6_3_0_3)"}
+- {device: energymgr, id: "6473", status: confirmed,
+   evidence: "web settings page 6.3.0.5 zone 3 offset: shows 0, equal to the bus value (registers/web_menu.csv, node U6_3_0_5)"}
+- {device: energymgr, id: "6371", status: confirmed,
+   evidence: "web settings page 6.3.1.0.1 zone 1 reduced temperature: shows 21.0, equal to the bus value (registers/web_menu.csv, node U6_3_1_0_1)"}
+- {device: energymgr, id: "6272", status: confirmed,
+   evidence: "web settings page 6.3.1.1.0 zone 2 comfort: shows 22.5, equal to the bus value (registers/web_menu.csv, node U6_3_1_1_0)"}
+- {device: energymgr, id: "6372", status: confirmed,
+   evidence: "web settings page 6.3.1.1.1 zone 2 reduced: shows 23.0, equal to the bus value (registers/web_menu.csv, node U6_3_1_1_1)"}
+- {device: energymgr, id: "6273", status: confirmed,
+   evidence: "web settings page 6.3.1.2.0 zone 3 comfort: shows 22.5, equal to the bus value (registers/web_menu.csv, node U6_3_1_2_0)"}
+- {device: energymgr, id: "6373", status: confirmed,
+   evidence: "web settings page 6.3.1.2.1 zone 3 reduced: shows 23.0, equal to the bus value (registers/web_menu.csv, node U6_3_1_2_1)"}
+- {device: energymgr, id: "7971", status: confirmed,
+   evidence: "web settings page 6.3.5.0.1 automatic winter mode threshold z1: shows 20, equal to the bus value (registers/web_menu.csv, node U6_3_5_0_1)"}
+- {device: energymgr, id: "7a71", status: confirmed,
+   evidence: "web settings page 6.3.5.0.2 automatic winter mode delay z1 (min): shows 300, equal to the bus value (registers/web_menu.csv, node U6_3_5_0_2)"}
+- {device: energymgr, id: "7972", status: confirmed,
+   evidence: "web settings page 6.3.5.1.1 winter threshold z2: shows 20, equal to the bus value (registers/web_menu.csv, node U6_3_5_1_1)"}
+- {device: energymgr, id: "7a72", status: confirmed,
+   evidence: "web settings page 6.3.5.1.2 winter delay z2 (min): shows 300, equal to the bus value (registers/web_menu.csv, node U6_3_5_1_2)"}
+- {device: energymgr, id: "7973", status: confirmed,
+   evidence: "web settings page 6.3.5.2.1 winter threshold z3: shows 20, equal to the bus value (registers/web_menu.csv, node U6_3_5_2_1)"}
+- {device: energymgr, id: "7a73", status: confirmed,
+   evidence: "web settings page 6.3.5.2.2 winter delay z3 (min): shows 300, equal to the bus value (registers/web_menu.csv, node U6_3_5_2_2)"}
+- {device: energymgr, id: "692e", status: confirmed,
+   evidence: "web settings page 6.10.1 buffer comfort setpoint heating: shows 40, equal to the bus value (registers/web_menu.csv, node U6_10_1)"}
+- {device: energymgr, id: "6126", status: confirmed,
+   evidence: "web settings page 6.9.0 DHW comfort setpoint: shows 35, equal to the bus value (registers/web_menu.csv, node U6_9_0)"}
+- {device: energymgr, id: "712b", status: confirmed,
+   evidence: "web settings page 6.9.5.1 thermal cleanse cycle frequency (481 h = 28860 min): shows 481, equal to the bus value (registers/web_menu.csv, node U6_9_5_1)"}
+- {device: energymgr, id: "c679",
+   evidence: "web settings page 0.0 zone 1 mode (Manual = 2): shows Manual, equal to the bus value (registers/web_menu.csv, node U0_0)"}
+- {device: energymgr, id: "c67a", status: confirmed,
+   evidence: "web settings page 0.1 zone 2 mode (Manual = 2): shows Manual, equal to the bus value (registers/web_menu.csv, node U0_1)"}
+- {device: energymgr, id: "c67b", status: confirmed,
+   evidence: "web settings page 0.2 zone 3 mode (Manual = 2): shows Manual, equal to the bus value (registers/web_menu.csv, node U0_2)"}
+- {device: energymgr, id: "1c22", status: confirmed,
+   evidence: "web settings page 6.3.4 CH mode (Green Mode = 0): shows Green Mode, equal to the bus value (registers/web_menu.csv, node U6_3_4)"}
+- {device: energymgr, id: "1f23", status: confirmed,
+   evidence: "web settings page 6.10.5 buffer setpoint mode (Variable = 1): shows Variable, equal to the bus value (registers/web_menu.csv, node U6_10_5)"}
+- {device: energymgr, id: "0520",
+   evidence: "web settings page 6.3.3 AUTO function ON: shows ON, equal to the bus value (registers/web_menu.csv, node U6_3_3)"}
+- {device: energymgr, id: "0320",
+   evidence: "web settings page 6.15.0.0 quiet mode activation ON: shows ON, equal to the bus value (registers/web_menu.csv, node U6_15_0_0)"}
+- {device: energymgr, id: "0b20",
+   evidence: "web settings page 6.9.5.0 thermal cleanse ON: shows ON, equal to the bus value (registers/web_menu.csv, node U6_9_5_0)"}
+- {device: energymgr, id: "1b23",
+   evidence: "web settings page 6.10.0 buffer activation ON: shows ON, equal to the bus value (registers/web_menu.csv, node U6_10_0)"}
+- {device: energymgr, id: "0781",
+   evidence: "web settings page 6.3.5.0.0 winter mode activation z1 OFF: shows OFF, equal to the bus value (registers/web_menu.csv, node U6_3_5_0_0)"}
+- {device: energymgr, id: "c028",
+   evidence: "web settings page 6.9.2 comfort function Disabled: shows Disabled, equal to the bus value (registers/web_menu.csv, node U6_9_2)"}
+- {device: energymgr, id: "0220",
+   evidence: "web settings page 0.6 DHW Disabled: shows Disabled, equal to the bus value (registers/web_menu.csv, node U0_6)"}
+# --- M1: cloud menu sweep 333-999 (2026-10-08 21:40 - 2026-10-09 06:07) ---
+- {device: energymgr, id: "752e", name: buffer_comfort_setpoint_cooling, unit: "°C", scale: 0.1, status: confirmed,
+   evidence: "cloud menu 370 U_6.10.3 'Buffer comfort setpoint cooling' = 18.0, fetched 2001 752e = 180; web settings page 6.10.3 shows 18"}
+- {device: energymgr, id: "1b23", name: buffer_enabled, status: confirmed,
+   evidence: "cloud menu 409 T_20.0.0 'Buffer activation' = 1, fetched 2001 1b23 = 1; web settings page 6.10.0 ON"}
+- {device: gateway, id: "432f", status: hypothesis, evidence: "cloud menu 473 T_0.6.3 'Gas cost', fetched 2001 432f; gateway 2020 broadcast; 0"}
+- {device: gateway, id: "442f", status: hypothesis, evidence: "cloud menu 474 T_0.6.5 'Electricity cost', fetched 2001 442f; 0"}
+- {device: gateway, id: "452f", status: hypothesis, evidence: "cloud menu 475 T_0.6.6 'Electricity cost (low tariff)', fetched 2001 452f; 0"}
+- {device: gateway, id: "c78b", status: hypothesis, evidence: "cloud menu 476 T_0.6.0 'Currency', fetched 2001 c78b; 0"}
+- {device: gateway, id: "c58b", status: hypothesis, evidence: "cloud menu 477 T_0.6.2 'Gas units', fetched 2001 c58b; 0"}
+- {device: gateway, id: "c48b", status: hypothesis, evidence: "cloud menu 478 T_0.6.1 'Gas Type', fetched 2001 c48b; 0"}
+- {device: gateway, id: "c68b", status: hypothesis, evidence: "cloud menu 479 T_0.6.4 'Electric units', fetched 2001 c68b; 0"}
+# --- M1: owner's Sensys walk through menu 20 (buffer) and 17.14.0, 2026-10-09 07:51-07:53 ---
+# The Sensys read each entry live while scrolling (2001 broadcast requests in menu order), so each screen maps to one register.
+- {device: energymgr, id: "1b23", evidence: "Sensys 20.0.0 Buffer activation = 1 (read 2001 1b23 at 07:52:58)"}
+- {device: energymgr, id: "d12c", name: buffer_charge_mode, status: confirmed,
+   evidence: "Sensys 20.0.1 buffer charge mode = 1 'Partial charge' (2 = Full charge), read 2001 d12c = 1 at 07:52:59"}
+- {device: energymgr, id: "672e", name: buffer_setpoint_delta, unit: "K", scale: 0.1, status: confirmed,
+   evidence: "Sensys 20.0.2 'Buffer setpoint temperature' = 5 °C, read 2001 672e = 50 at 07:53:00. claytonn73 calls it buffer setpoint hysteresis. With setpoint mode Variable it is probably the margin below the flow target at which a charge starts (2026-10-08 07:49: buffer 4.9 K below target); meaning still a hypothesis, value confirmed"}
+- {device: energymgr, id: "692e", status: confirmed, evidence: "Sensys 20.0.3 Buffer comfort setpoint heating = 40 (read 2001 692e = 400)"}
+- {device: energymgr, id: "752e", evidence: "Sensys 20.0.4 Buffer comfort setpoint cooling = 18 (read 2001 752e = 180)"}
+- {device: energymgr, id: "682e", name: buffer_sg_ready_setpoint, unit: "°C", scale: 0.1, status: confirmed,
+   evidence: "Sensys 20.0.5 SG Ready buffer setpoint = 50, read 2001 682e = 500"}
+- {device: energymgr, id: "6a2e", name: buffer_pv_offset, unit: "K", scale: 0.1, status: confirmed,
+   evidence: "Sensys 20.0.6 Offset PV integration setpoint = 5, read 2001 6a2e = 50"}
+- {device: energymgr, id: "1f23", status: confirmed, evidence: "Sensys 20.0.7 Buffer setpoint mode = 1 Variable (0 Fixed), read 2001 1f23 = 1"}
+- {device: energymgr, id: "769e", name: buffer_low_temp, unit: "°C", scale: 0.1, status: confirmed,
+   evidence: "Sensys 20.1.0 'Low sensor temperature' = 21, read 2001 769e = 212 at 07:53:09. M0: follows the heat pump return 7710 one cycle later, and the buffer has one physical sensor, so the energy manager probably uses the heat pump return as the low reading (hypothesis)"}
+- {device: energymgr, id: "759e", name: buffer_high_temp, unit: "°C", scale: 0.1, status: confirmed,
+   evidence: "Sensys 20.1.2 'High sensor temperature' = 26, read 2001 759e = 266 at 07:53:09 (the Sensys truncates)"}
+- {device: energymgr, id: "779e", status: hypothesis,
+   evidence: "no Sensys menu entry for a mid sensor (20.1.1 absent); always 0: no sensor"}
+- {device: energymgr, id: "1b45", status: confirmed, evidence: "Sensys 20.1.3 Buffer charge request = 0, read 2001 1b45 = 0"}
+- {device: energymgr, id: "5ad1", name: buffer_charge_hours_heating, unit: h, scale: 1, status: confirmed,
+   evidence: "Sensys 20.2.0 'Buffer charge hours Heating (/10)' = 1233, read 2001 5ad1 = 12334: plain hours, shown /10"}
+- {device: energymgr, id: "5bd1", name: buffer_charge_hours_cooling, unit: h, scale: 1, status: confirmed,
+   evidence: "Sensys 20.2.1 'Buffer charge hours Cooling (/10)' = 0, read 2001 5bd1 = 0"}
+- {device: energymgr, id: "c94b",
+   evidence: "Sensys 17.14.0 Energy Manager status = 0 'Standby', read 2001 c94b = 0 at 07:53:55"}
+- {device: energymgr, id: "c94b",
+   evidence: "claytonn73 enum energymgr_status: 0 standby, 1 antifreeze, 2 heating_cycle, 3 heating_temperature_reached, 4 dhw_cycle, ..., 19 defrost, 20 buffer_heating_and_dhw, 22 buffer_heating, 23 buffer_cooling, 24 automatic_calibration. Fits M1: 22 = request served from the buffer while the heat pump does not charge; 0 = Standby confirmed on the Sensys"}
+- {device: heatpump, id: "ca46",
+   evidence: "claytonn73 enum heatpump_status: 0 off, 1 stand_by, 3 heating, 9 and 17 defrost, 11 timeguard, 14 pump_down, 15 soft_fail, ...; 15 is what this unit reports while idle (Sensys 17.11.0 shows 15)"}
+- {device: energymgr, id: "d727", status: hypothesis,
+   evidence: "Sensys 17.3.2 'CH pump overrun' = 3 (owner sheet; label from the sheet, unit min). Fits M1: after each charge end the circulator ran exactly 3 min (ca46 = 1) before d09c went to 0. Never broadcast; menu-only"}
+# --- M1: value lists for the generated config (sources in the evidence of each register) ---
+- {device: energymgr, id: "c94b", values: "0=standby;1=antifreeze_cycle;2=heating_cycle;3=heating_temperature_reached;4=dhw_cycle;5=thermal_cleanse;6=air_purge;7=chimney_clean;8=floor_drying;9=no_heat_generation;10=manual_mode;11=fault;12=initialization;13=off;14=cooling_cycle;15=dhw_antifreeze_cycle;16=pv_integration;17=dehumidification;18=pump_down;19=defrost;20=buffer_heating_and_dhw;21=buffer_cooling_and_dhw;22=buffer_heating;23=buffer_cooling;24=automatic_calibration",
+   evidence: "value list from claytonn73 energymgr_status; 0, 2, 22 seen and consistent"}
+- {device: heatpump, id: "ca46", values: "0=off;1=stand_by;2=cooling;3=heating;4=heating_boost;5=cooling_boost;6=heating_rating;7=cooling_rating;8=freeze_protection;9=defrost;10=overtemp_protection;11=timeguard;12=system_fail;13=hard_system_fail;14=pump_down;15=idle;16=rating_only_fan;17=defrost;18=cascade_heating;19=cascade_cooling",
+   evidence: "value list from claytonn73 heatpump_status, except 15: upstream soft_fail, but this unit reports 15 whenever it is idle, so it is labelled idle here"}
+- {device: energymgr, id: "ca46", values: "0=off;1=stand_by;2=cooling;3=heating;4=heating_boost;5=cooling_boost;6=heating_rating;7=cooling_rating;8=freeze_protection;9=defrost;10=overtemp_protection;11=timeguard;12=system_fail;13=hard_system_fail;14=pump_down;15=idle;16=rating_only_fan;17=defrost;18=cascade_heating;19=cascade_cooling",
+   evidence: "same list as heatpump ca46 (copy)"}
+- {device: energymgr, id: "c679", values: "0=off;1=manual_night;2=manual;3=time_program", evidence: "zone mode list from the cloud library; 2 manual confirmed by the owner, 2/3 offered by the web page"}
+- {device: energymgr, id: "1f23", values: "0=fixed;1=variable", evidence: "Sensys 20.0.7 / web 6.10.5"}
+- {device: energymgr, id: "d12c", values: "1=partial;2=full", evidence: "Sensys 20.0.1"}
+- {device: energymgr, id: "1c22", values: "0=green;1=standard", evidence: "web 6.3.4"}
+- {device: energymgr, id: "c028", values: "0=disabled;1=time_based;2=always_active;3=hc_hp;4=hc_hp_40;5=green", evidence: "web 6.9.2"}
+- {device: energymgr, id: "c079", values: "0=fixed;1=on_off;2=outdoor_only;3=room_only;4=outdoor_and_room", evidence: "ysard enum via tweetgeek; 4 fits the curve fit"}
+- {device: heatpump, id: "d09c", values: "0=off;2=circulator_only;10=compressor", evidence: "M1 trace: values seen and their timing"}
+- {device: heatpump, id: "cd46", values: "0=off;3=heating", evidence: "M1 trace"}
+- {device: heatpump, id: "6a47", unit: "°C", scale: 0.1, evidence: "same value as the energy manager's flow setpoint 6047 (°C, tenths)"}
+- {device: energymgr, id: "0081", values: "0=low;1=high", evidence: "zone temperature range: ysard/tweetgeek BCD 0=low;1=high (low = underfloor-type flow temperatures); 0 here"}
+# --- M1: display labels from the owner's manual (2026-10-09). Later entries override earlier value lists. ---
+- {device: heatpump, id: "ca46", values: "0=Off;1=Stand by;2=Cooling;3=Heating;4=Booster Heating;5=Booster Cooling;6=Rating in Heat Mode;7=Rating in Cooling Mode;8=Freeze Protection;9=Defrost;10=High Temperature Protection;11=Timeguard;12=System Fail;13=Hard System Fail;14=Pump Down;15=Soft Fail Mode;16=Rating Only Fan;17=Defrost;18=Cascade Heating;19=Cascade Cooling",
+   evidence: "0-15 from the owner's manual (15 Soft Fail Mode is what this unit reports while idle); 16-19 from claytonn73"}
+- {device: energymgr, id: "ca46", values: "0=Off;1=Stand by;2=Cooling;3=Heating;4=Booster Heating;5=Booster Cooling;6=Rating in Heat Mode;7=Rating in Cooling Mode;8=Freeze Protection;9=Defrost;10=High Temperature Protection;11=Timeguard;12=System Fail;13=Hard System Fail;14=Pump Down;15=Soft Fail Mode;16=Rating Only Fan;17=Defrost;18=Cascade Heating;19=Cascade Cooling",
+   evidence: "same list as heatpump ca46"}
+- {device: heatpump, id: "d09c", values: "0=Off;2=Circulator only;10=Compressor", evidence: "display labels for the M1 trace values"}
+- {device: heatpump, id: "cd46", values: "0=Off;3=Heating", evidence: "display labels for the M1 trace values"}
+- {device: heatpump, id: "c446", unit: "%", evidence: "unit % is unconfirmed (not in the manual or the Sensys menus); shown as % at the owner's explicit request (M2); 100 by day, 75 in quiet mode"}
+- {device: energymgr, id: "649f", name: flow_setpoint_alt, unit: "°C", scale: 0.1, status: hypothesis,
+   evidence: "M2: equals the latest 6047 in 10120 of 10126 broadcasts 2026-10-08..11 (the 6 others: 6047 changed between the two broadcasts). Broadcast every 25 s at a decodable position (769e+779e+649f), while 6047 decodes only from its 200f broadcast every 7 min"}
+- {device: gateway, id: "cc4b", values: "0=Off;1=Initialization;2=Idle;3=Access Point initializing;4=Access Point mode on;5=Station Mode - Connecting;6=Station Mode - Connected;7=Station Mode - Provisioning;8=Station Mode - Server Connected;9=Wifi error",
+   evidence: "owner's manual (Sensys 19.1.0 Connectivity status); reads 8 = server connected"}
+- {device: gateway, id: "c89c", values: "0=Initialization;1=Waiting for Update;2=Updating Micro 1;3=Updating Micro 2", evidence: "owner's manual (Sensys 19.1.4 SW upgrade status)"}
+- {device: energymgr, id: "d12c", values: "0=Not Defined;1=Partial Charge (1 sensor);2=Full Charge (2 sensor)", evidence: "owner's manual; Sensys 20.0.1 showed 1 Partial charge"}
+- {device: energymgr, id: "1f23", values: "0=Fixed;1=Variable", evidence: "owner's manual"}
+- {device: energymgr, id: "1c22", values: "0=Green mode;1=Standard mode", evidence: "owner's manual"}
+- {device: energymgr, id: "c94b", values: "0=Stand-by;1=Antifreeze Cycle;2=Heating Cycle;3=DHW Cycle;4=Thermal Cleanse Function;5=Air Purge Function;6=Chimney Function;7=Floor drying cycle;8=No Heat Generation;9=Manual Mode;10=Error;11=Initialization;12=Off;13=Cool Mode;14=DHW Antifreeze;15=Photovoltaic Integration;16=Dehumidification;17=Pump Down;19=Defrost;20=Buffer Heating and DHW;21=Buffer Cooling and DHW;22=Buffer Heating;23=Buffer Cooling;24=Automatic Calibration",
+   evidence: "0-17 from the owner's manual; 19-24 from claytonn73 (22 Buffer Heating is seen on this bus); 18 left out where the two lists disagree"}
+- {device: energymgr, id: "dc28", values: "0=None;1=Plus;2=Compact;3=Flex;4=Hp Water Heater;5=Lightbox", evidence: "owner's manual; reads 5"}
+- {device: energymgr, id: "ce79", values: "0=Standard;1=RT Time Programs Exclusion;2=Forcing Heat Demand", evidence: "owner's manual (Heat request mode)"}
+- {device: energymgr, id: "c679", values: "0=Off;1=Manual night;2=Manual;3=Time program", evidence: "display form of the confirmed zone mode list"}
+- {device: energymgr, id: "0081", values: "0=Low;1=High", evidence: "display form"}
+- {device: energymgr, id: "c079", values: "0=Fix Flow T;1=Basic Thermoreg;2=Room T Only;3=Outdoor T Only;4=Room+Outdoor T",
+   evidence: "owner's manual (Thermoregulation); note 2/3 are swapped compared with ysard's list; 4 is unaffected"}
+- {device: energymgr, id: "dc28", status: confirmed,
+   evidence: "Sensys 17.2.0 shows 'Lightbox' (5), matching the manual's list. The owner's hardware is a Nimbus Plus; the setting is left as it is (owner's decision 2026-10-09)"}
+# M2 polled reads (registers/polled.yaml), first night 2026-10-11/12: all answered by the heat pump 1e
+- {device: heatpump, id: "6c4f", name: evaporator_pressure, unit: bar, scale: 0.1,
+   evidence: "M2 polls from 1e, 2026-10-11/12: 9.0-13.0 bar; 11.0 idle, ~9.2 while running at 9.7 C outdoor (plausible R32 evaporation a few K below air, refrigerant unverified)"}
+- {device: heatpump, id: "6d4f", name: condenser_pressure, unit: bar, scale: 0.1,
+   evidence: "M2 polls: 16.6-23.8 bar; rises 19.4 -> 23.0 during a run while the flow goes 30 -> 38 C (plausible R32 condensing at the flow temperature)"}
+- {device: heatpump, id: "6e4f", name: fan1_rpm, evidence: "M2 polls: 0 idle, ~900 rpm for the first 3 min of a run, then ~600"}
+- {device: heatpump, id: "6f4f", name: fan2_rpm, evidence: "M2 polls: as fan 1 (the outdoor unit has two fans); 150 rpm run-down after the stop"}
+- {device: heatpump, id: "1145", name: compressor_on, status: confirmed,
+   evidence: "M2 polls: 0 -> 1 within 5-16 s of every compressor start (cb46 > 0) and back after every stop, 4 runs 2026-10-11/12"}
+- {device: heatpump, id: "1245", name: compressor_preheating,
+   evidence: "M2 polls: 1 while idle after long or cold pauses (00:11 after 4.5 h idle at 11.0 C outdoor; 20-27 min after the morning runs at 9.7 C), 0 at every compressor start. Shelly idle power 88 W with it on vs 17 W off (+70 W): crankcase heater (hypothesis); ~5.9 h = ~0.4 kWh that night"}
+- {device: heatpump, id: "1445", name: fan1_status, status: confirmed, evidence: "M2 polls: 1 from ~10 s after each compressor start to ~45 s after the stop, matching 6e4f > 0"}
+- {device: heatpump, id: "1545", name: fan2_status, status: confirmed, evidence: "M2 polls: as 1445, matching 6f4f > 0"}
+- {device: heatpump, id: "1345", name: four_way_valve, evidence: "M2 polls: always 0 (no defrost yet, heating)"}
+- {device: heatpump, id: "1645", name: base_panel_heater, evidence: "M2 polls: always 0 (outdoor >= 8 C)"}
+- {device: heatpump, id: "1045", name: inverter_shutoff_protection, evidence: "M2 polls: always 0"}
+# value lists from the owner's manual (2026-10-12, 0-indexed); entries for other inputs/outputs exist
+# in the manual but those registers are neither broadcast nor read
+- {device: energymgr, id: "c92a", values: "0=Not Defined;1=Absent;2=EDF;3=SG1;4=External switch off signal",
+   evidence: "owner's manual, HV input 1 configuration (Sensys 17.1.0); reads 1 = Absent"}
+- {device: energymgr, id: "cb2a", values: "0=Not Defined;1=Absent;2=DLSG;3=SG2",
+   evidence: "owner's manual, HV input 2 configuration (Sensys 17.1.1); reads 1 = Absent"}
+- {device: energymgr, id: "d42a", values: "0=None;1=Humidistat sensor",
+   evidence: "owner's manual, AUX input 1 configuration (Sensys 17.1.3); reads 0 = None"}
+- {device: heatpump, id: "1345", values: "0=Heat;1=Cool",
+   evidence: "manual: binary (min 0, max 1); always 0 while heating here, so 0 = heat; 1 = cool is the owner's assumption (2026-10-12), unconfirmed"}
+# M3 step 2/3 (2026-10-14): zone 1 override, captured from the app, the Sensys and ebusd
+- {device: sensys, id: "0990", name: z1_override_active, status: confirmed, description: "Zone 1 temporary override active",
+   evidence: "M3 2026-10-14: 1 while an override runs (app override 10:04-10:15, Sensys override 10:23-10:30, ebusd override 15:05-15:20), 0 otherwise; the Sensys re-broadcasts it every minute and sets 0 at the end time. The app sends 0 (from 7f) before every switch to Manual or Off. docs/protocol.md, Settings and writes"}
+- {device: energymgr, id: "0990", status: hypothesis, description: "Zone 1 override active (energy manager copy)",
+   evidence: "M3: same register as the Sensys's override flag; the energy manager answers it in 200f (0 and 1 seen, 2026-10-07..14)"}
+- {device: sensys, id: "6997", name: z1_override_temp, status: confirmed, unit: "°C", scale: 0.1, description: "Zone 1 override temperature",
+   evidence: "M3 2026-10-14: 220 (22.0) during each override, sent by the gateway with 0990 = 1 and re-broadcast by the Sensys every minute; the energy manager's desired temperature 6996 followed it"}
+- {device: energymgr, id: "c194", name: z1_mode_state, status: hypothesis, description: "Zone 1 mode state (0 off, 1 time program, 2 manual)",
+   values: "0=Off;1=Time program;2=Manual",
+   evidence: "M3 2026-10-14: followed c679 in every mode change (0 off, 1 time program, 2 manual); stayed 1 during an override in time program mode"}
+

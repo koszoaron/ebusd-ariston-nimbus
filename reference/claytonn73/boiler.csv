@@ -1,0 +1,76 @@
+############################################################################################
+####                             BOILER MESSAGES                                        ####
+#### address 13: master #12                                                             ####
+#### address 18: slave #12                                                              ####
+############################################################################################
+
+
+# Boiler/hybrid related settings not investigated to any degree as not present on system
+
+# Boiler Status
+b,boiler,boiler_status,Boiler Status,,fe,2010,c04b,,,boiler_status
+r,boiler,boiler_status,Boiler Status,,3c,2000,c04b,,,ignore_1;boiler_status
+
+r,boiler,gas_cost,Gas Cost,,18,2000,642b,,,ignore_1;cost
+w,boiler,gas_cost,Gas Cost,,fe,2010,642b,,,cost
+
+r,boiler,boiler_disable_threshold,Boiler Disable Temperature Threshold,,18,2000,7126,,,ignore_1;temperature:setting
+w,boiler,boiler_disable_threshold,Boiler Disable Temperature Threshold,,18,2010,7126,,,temperature:setting
+r,boiler,boiler_disable_threshold_limits,Boiler Disable Temperature Threshold Limits,,18,2001,7126,,,temperature_min_max
+
+r,boiler,ext_boiler_heat_efficiency,External Boiler Heat Efficiency,,18,2000,782d,,,ignore_1;percent
+r,boiler,ext_boiler_dhw_efficiency,External Boiler DHW Efficiency,,18,2000,762e,,,ignore_1;percent
+
+r,boiler,boiler_calculated_cost,Boiler Calculated Cost,,18,2000,7147,,,ignore_1;cost
+
+#Boiler Maintenance Requred Warning Enable/Disable (0=No Warning,1=Warning on scheduled maintenance)
+r,boiler,maintenance_warnings_enabled,Enable warning on next maintenance,,3c,2001,0e20,,,onoff
+w,boiler,maintenance_warnings_enabled,Enable warning on next maintenance,,3c,2020,0e20,,,onoff
+
+#Boiler Maintenance Schedule (expressed in number of months to next maintenance needed)
+#r,boiler,maintenance_months,Month to next maintenance,,3c,2001,c627,,,ignore_1;months
+r,boiler,maintenance_months,Month to next maintenance,,3c,2001,c627,,,months
+w,boiler,maintenance_months,Month to next maintenance,,3c,2020,c627,,,months
+
+#Boiler direct ask
+r,boiler,boiler_pressure,Boiler circuit pressure,,3c,2000,7547,,,ignore_1;pressure
+
+# LWT_temp read by other broadcasted message, commenting this line to avoid ebusd error for duplicate ID
+# r,boiler,LWT_temp,heating temperature,,3c,2000,6810,,,ignore_1;temperature
+r,boiler,EWT_temp,heating return temperature,,3c,2000,6910,,,ignore_1;temperature
+r,boiler,diverter_cycles,Number of diverter valve cycles,,3c,2000,40d2,,,ignore_1;count
+r,boiler,ignition_cycles,Number of ignition cycles,,3c,2000,42d8,,,ignore_1;count
+r,boiler,circulation_time,circulation time,,3c,2000,44aF,,,ignore_1;minutes
+r,boiler,boiler_life_time,Boiler Life Time,,3c,2000,50d9,,,ignore_1;minutes
+r,boiler,boiler_circulation_cycles,Number of circulation cycles,,3c,2000,44d2,,,ignore_1;count
+r,boiler,boiler_fan_cycles,Number of fan cycles,,3c,2000,4CD2,,,ignore_1;count
+r,boiler,hours_burner_on_CH,Hours Burner On CH,,3c,2000,4bd1,,,ignore_1;hours
+r,boiler,hours_burner_on_DHW,Hours Burner On DHW,,3c,2000,4cd1,,,ignore_1;hours
+r,boiler,flame_active,Flame active,,3c,2000,0e11,,,ignore_1;onoff
+r,boiler,flame_power_kw,Boiler Flame Power KW,,3c,2000,6847,,,ignore_1;kw
+r,boiler,diverter_valve,Boiler Diverter Valve,,3c,2000,c012,,,ignore_1;valve_dhw_heat
+r,boiler,hours_pump_on,Pump Hours On,,3c,2000,42d2,,,ignore_1;hours
+r,boiler,flame_lift_offs,Flame Lift Offs,,3c,2000,46d1,,,ignore_1;count,
+#r,boiler,heat_request_avg_duration,Heat Request Average Duration,,3c,2000,42d2,,,ignore_1;hours
+r,boiler,pump_current_modulation,Pump Current Modulation,,3c,2000,c300,,,ignore_1;percent
+r,boiler,boiler_current_modulation,Boiler Current Gas Modulation,,3c,2000,c404,,,ignore_1;percent
+
+#Boiler Broadcasted messages
+
+r,boiler,dhw_max_power_pct,DHW Bolier Max Power PCT,,3c,2000,6229,,,ignore_1;percent
+r,boiler,heat_max_power_pct,Heating Bolier Max Power PCT,,3c,2000,6329,,,ignore_1;percent
+r,boiler,heat_min_power_pct,Heating Bolier Min Power PCT,,3c,2000,6429,,,ignore_1;percent
+r,boiler,slow_ignition_power_pct,Slow Ignition Power PCT,,3c,2000,6529,,,ignore_1;percent
+r,boiler,heat_max_adj_power_pct,Heating Bolier Max Adjustable Power PCT,,3c,2000,6629,,,ignore_1;percent
+r,boiler,pump_max_pwm,Pump Max PWM,,3c,2000,c928,,,ignore_1;percent
+r,boiler,pump_min_pwm,Pump Min PWM,,3c,2000,ca28,,,ignore_1;percent
+r,boiler,pressure_monitoring_device,Pressure Monitoring Device,,3c,2000,c328,,,ignore_1;pressure_device
+r,boiler,warning_pressure,Water Warning Pressure,,3c,2000,c12a,,,ignore_1;pressure
+r,boiler,ignition_delay,Ignition Delay,,3c,2000,c027,,,ignore_1;minutes
+r,boiler,pump_operation,Pump Operation,,3c,2000,c228,,,ignore_1;low_high_modulating
+r,boiler,heat_post_circulation,Heating Post Circulation,,3c,2000,c227,,,ignore_1;minutes
+r,boiler,ignition_delay_type,Ignition Delay Type,,3c,2000,1320,,,ignore_1;manual_auto
+r,boiler,nominal_power,Nominal Power,,3c,2000,6829,,,ignore_1;kwshort
+r,boiler,boiler_type,Boiler Type,,3c,2000,c428,,,ignore_1;boiler_type
+r,boiler,hybrid_integration,Hybrid Integration,,3c,2000,0420,,,ignore_1;onoff
+r,boiler,fan_speed,Boiler Fan Speed,,3c,2000,4013,,,ignore_1;rpm

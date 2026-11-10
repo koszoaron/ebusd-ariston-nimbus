@@ -1,0 +1,28 @@
+# Ask ebusd for all its current values after Home Assistant starts. Put this file in
+# <config>/packages/ (see ha/cop.yaml).
+#
+# ebusd publishes its values without the MQTT retain flag, so after a restart HA has none until each
+# telegram is seen on the bus again (the zone 1 mode only every few minutes). On HA's birth message
+# ebusd re-sends the discovery definitions, but not the values. A publish to "ebusd/list" makes ebusd
+# re-publish the last value of every message it has seen since its own start, from its cache, with
+# no bus traffic (mqtthandler.cpp, list request; verified with a private ebusd). Payload "1": only
+# messages that have a value.
+#
+# Needs: the HA MQTT user may publish "ebusd/list" (EMQX ACL, checked by ebus-mqttacl). After a
+# restart of ebusd itself there is nothing cached; values come back as their telegrams arrive.
+
+automation:
+  - id: ebusd_list_on_ha_start
+    alias: "eBUS: get ebusd's values after HA starts"
+    mode: single
+    triggers:
+      - trigger: homeassistant
+        event: start
+    actions:
+      # let ebusd re-send the discovery definitions first (on HA's birth message), so the entities
+      # exist when the values arrive
+      - delay: { seconds: 30 }
+      - action: mqtt.publish
+        data:
+          topic: ebusd/list
+          payload: "1"

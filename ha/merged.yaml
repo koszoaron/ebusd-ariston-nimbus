@@ -1,0 +1,94 @@
+# Key values that ebusd decodes from more than one frame layout, combined into one sensor each.
+# Put this file in <config>/packages/ (see ha/cop.yaml). Check the entity ids against yours.
+#
+# The energy manager broadcasts its registers in a rotating list of three per frame; now and then the
+# rotation shifts and a register sits in another frame for minutes (2026-10-10: buffer high temperature
+# 17 min and zone 1 flow target 21 min without an update from the main layout). The generated config
+# also decodes those other layouts as diagnostic entities "... (alt. layout)". Each sensor below shows
+# the value of whichever source changed last: a template re-renders on every state change of a source,
+# and the source that just changed is the one with the newest last_reported.
+# Measured update rates: reports/updates.md (ebus-updates).
+
+template:
+  - sensor:
+      - name: "Buffer temperature"
+        unique_id: merged_buffer_high_temp
+        unit_of_measurement: "\u00b0C"
+        device_class: temperature
+        state_class: measurement
+        state: >
+          {% set s = expand('sensor.heating_ebusd_energymgr_buffer_high_temperature',
+                            'sensor.heating_ebusd_energymgr_buffer_high_temperature_alt_layout',
+                            'sensor.heating_ebusd_energymgr_buffer_high_temperature_alt_layout_2')
+                     | selectattr('state', 'is_number') | sort(attribute='last_reported', reverse=true) | list %}
+          {{ s[0].state if s else none }}
+
+      - name: "Zone 1 flow target"
+        unique_id: merged_z1_flow_target
+        unit_of_measurement: "\u00b0C"
+        device_class: temperature
+        state_class: measurement
+        state: >
+          {% set s = expand('sensor.heating_ebusd_energymgr_zone_1_calculated_flow_target',
+                            'sensor.heating_ebusd_energymgr_zone_1_calculated_flow_target_alt_layout')
+                     | selectattr('state', 'is_number') | sort(attribute='last_reported', reverse=true) | list %}
+          {{ s[0].state if s else none }}
+
+      # 6047 comes every 7 min from its own broadcast, 649f (same value) every 25 s
+      - name: "Flow setpoint"
+        unique_id: merged_flow_setpoint
+        unit_of_measurement: "\u00b0C"
+        device_class: temperature
+        state_class: measurement
+        state: >
+          {% set s = expand('sensor.heating_ebusd_energymgr_flow_temperature_setpoint',
+                            'sensor.heating_ebusd_energymgr_flow_temperature_setpoint_alt_layout')
+                     | selectattr('state', 'is_number') | sort(attribute='last_reported', reverse=true) | list %}
+          {{ s[0].state if s else none }}
+
+      - name: "Heat pump air temperature"
+        unique_id: merged_hp_air_temp
+        unit_of_measurement: "\u00b0C"
+        device_class: temperature
+        state_class: measurement
+        state: >
+          {% set s = expand('sensor.heating_ebusd_heatpump_outside_air_temperature_heat_pump_sensor',
+                            'sensor.heating_ebusd_heatpump_outside_air_temperature_heat_pump_sensor_alt_layout',
+                            'sensor.heating_ebusd_heatpump_outside_air_temperature_heat_pump_sensor_alt_layout_2')
+                     | selectattr('state', 'is_number') | sort(attribute='last_reported', reverse=true) | list %}
+          {{ s[0].state if s else none }}
+
+      # the energy manager reads 7117 only every 6-38 min; ebusd polls it every ~30 s (config/polled.csv)
+      - name: "Condenser outlet temperature"
+        unique_id: merged_hp_condenser_outlet_temp
+        unit_of_measurement: "\u00b0C"
+        device_class: temperature
+        state_class: measurement
+        state: >
+          {% set s = expand('sensor.heating_ebusd_heatpump_condenser_outlet_temperature',
+                            'sensor.heating_ebusd_heatpump_condenser_outlet_temperature_alt_layout')
+                     | selectattr('state', 'is_number') | sort(attribute='last_reported', reverse=true) | list %}
+          {{ s[0].state if s else none }}
+
+      # Settings. 200e answers come only when the Light Gateway reads them for the cloud (none since the
+      # HACS integration was paused, 2026-10-14); the energy manager's 2020 settings broadcast carries
+      # both every 30 min (docs/protocol.md, "Who talks, and how often")
+      - name: "Zone 1 heating curve offset"
+        unique_id: merged_z1_heat_curve_offset
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: >
+          {% set s = expand('sensor.heating_ebusd_energymgr_zone_1_heating_curve_offset',
+                            'sensor.heating_ebusd_energymgr_zone_1_heating_curve_offset_alt_layout')
+                     | selectattr('state', 'is_number') | sort(attribute='last_reported', reverse=true) | list %}
+          {{ s[0].state if s else none }}
+
+      - name: "Zone 1 fixed flow temperature"
+        unique_id: merged_z1_fixed_flow_temp
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: >
+          {% set s = expand('sensor.heating_ebusd_energymgr_zone_1_fixed_flow_temperature',
+                            'sensor.heating_ebusd_energymgr_zone_1_fixed_flow_temperature_alt_layout')
+                     | selectattr('state', 'is_number') | sort(attribute='last_reported', reverse=true) | list %}
+          {{ s[0].state if s else none }}

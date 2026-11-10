@@ -1,0 +1,141 @@
+############################################################################################
+####                             DHw SETTINGS AND MESSAGES                              
+#### address 13: master #12                                                             
+#### address 18: slave #12                                                             
+#### address 70: master #4   
+############################################################################################
+
+# Each group of entries are documented based on the installation manual and the menu entry is noted as appropriate.
+
+# Switch to enable or disable DHW processing
+r,dhw,status,status,,fe,2001,0220
+b,dhw,status,status,13,fe,200e,0220,,,onoff
+w,dhw,status,status,70,fe,2020,0220,,,onoff
+b,ignored,dhw_status,DHW Status,13,fe,2010,0220,,,onoff
+
+# The current target temperature based on the current mode (reduced or comfort) and the current time of day.
+r5,dhw,current_target_temp,Current Target Temp,,fe,2000,6147
+b,dhw,current_target_temp,Current Target Temp,13,fe,200f,6147,,,temperature:setting
+
+# Defines the activation of the auxiliary heat source for DHW heating - either to assist or only on failure of the heat pump (1.4.0)
+r,dhw,aux_heat_activation,Auxiliary Heat Activation,,18,2001,1588,,,aux_heat_activation
+w,dhw,aux_heat_activation,Auxiliary Heat Activation,,18,2020,1588,,,aux_heat_activation
+b,dhw,aux_heat_activation,Auxiliary Heat Activation,13,18,2010,1588,,m,aux_heat_activation
+
+# Time required for starting the calculation of the DHW integration with the auxiliary sources or with the heating elements (1.4.2)
+r,dhw,delay_time,Delay Time,,18,2000,7f26,,,ignore_1;seconds:setting
+w,dhw,delay_time,Delay Time,,18,2020,7f26,,,seconds:setting
+r,dhw,delay_time_limits,Delay Time Limits,,18,2001,7f26,,,seconds_min_max
+
+# Activation threshold for DHW integration expressed in °C x min (1.4.3)
+r,dhw,release_integral,Release Integral,,18,2000,772e,,,ignore_1;integral:setting
+w,dhw,release_integral,Release Integral,,18,2020,772e,,,integral:setting
+r,dhw,release_integral_limits,Release Integral Limits,,18,2001,772e,,,integral_min_max
+
+# Selection of the operating logic of the integration heating element immersed in the DHW calorifier (1.4.4)
+# Update in Home Asistant disabled as element not present in system
+r,dhw,tank_heater,Tank Electric Heater,,18,2001,d12f,,,tank_heater
+w,ignored,tank_heater,Tank Electric Heater,,18,2020,d12f,,,tank_heater
+b,dhw,tank_heater,Tank Electric Heater,13,18,2010,d12f,,m,tank_heater
+
+# Defines the DHW calorifier temperature below which both the heat pump and the heating element switch on together (1.4.6)
+# Only used if 1.4.4 (tank electric heater) is set to 3 - need to validate if the AUX output is also activated
+r,dhw,high_priority_threshold,Temperature Threshold for High Priority DHW,,18,2000,678c,,,ignore_1;temperature:setting
+w,dhw,high_priority_threshold,Temperature Threshold for High Priority DHW,,18,2020,678c,,,temperature:setting
+r,dhw,high_priority_threshold_limits,Temperature Threshold for High Priority DHW Limits,,18,2001,678c,,,temperature_min_max
+
+# The system excludes the heat pump in domestic hot water mode if the outdoor temperature is below the set value (1.5.4)
+# Update in Home Asistant disabled as element not relevant in my system
+r,dhw,external_temperature_disable_threshold,External Temperature to Disable DHW,,18,2000,638f,,,ignore_1;temperature:setting
+w,ignored,external_temperature_disable_threshold_dhw,External Temperature to Disable DHW,,18,2020,638f,,,temperature:setting
+r,dhw,external_temperature_disable_threshold_limits,External Temperature to Disable DHW Limits,,18,2001,638f,,,temperature_min_max
+
+# Setting and limits for DHW comfort temperature (1.9.0)
+r,dhw,comfort_temp,Comfort Temperature,,fe,2000,6126
+b,dhw,comfort_temp,Comfort Temperature,13,fe,200f,6126,,,temperature:setting
+w,dhw,comfort_temp,Comfort Temperature,70,fe,2020,6126,,,temperature:setting
+r,dhw,comfort_temp_limits,Comfort Temperature Limits,,fe,2001,6126
+b,dhw,comfort_temp_limits,Comfort Temperature Limits,13,fe,200e,6126,,,temperature_min_max
+
+# Setting and limits for DHW reduced temperature (1.9.1)
+r,dhw,reduced_temp,Reduced Temperature,,fe,2000,6226
+b,dhw,reduced_temp,Reduced Temperature,13,fe,200f,6226,,,temperature:setting
+w,dhw,reduced_temp,Reduced Temperature,70,fe,2020,6226,,,temperature:setting
+r,dhw,reduced_temp_limits,Reduced Temperature Limits,,fe,2001,6226
+b,dhw,reduced_temp_limits,Reduced Temperature Limits,13,fe,200e,6226,,,temperature_min_max
+
+# Defines the scheduling for times when the comfort temperature will be maintained (1.9.2)
+r,dhw,scheduling,Scheduling Mode,,fe,2001,c028
+b,dhw,scheduling,Scheduling Mode,13,fe,200e,c028,,,control_mode
+w,dhw,scheduling,Scheduling Mode,70,fe,2020,c028,,,control_mode
+
+# Defines the DHW operation mode enabling differnt scheduling for DHW heating (1.9.3)
+# Update in Home Asistant disabled as setting not relevant in system
+r,dhw,operation_mode,Operation Mode,,18,2001,d08d,,,dhw_mode
+w,ignored,operation_mode,Operation Mode,,18,2020,d08d,,,dhw_mode
+
+# Defines the maximum time for HP only DHW teating after which the auxiliary integration is switched on (1.9.5)
+# Only relevant if 1.0.2 (tank management) is set to 2
+r,dhw,max_hp_charging_time,Max HP Charging Time,,18,2000,d327,,,ignore_1;minutes:setting
+w,dhw,max_hp_charging_time,Max HP Charging Time,,18,2020,d327,,,minutes:setting
+r,dhw,max_hp_charging_time_limits,Max HP Charging Time Limits,,18,2001,d327,,,minutes_min_max
+
+# When the function is enabled the DHW calorifier is heated and maintained at 60°C for one hour starting from the function start time (1.9.6)
+r,dhw,thermal_cleanse,Thermal Cleansing Function,,fe,2001,0b20
+b,dhw,thermal_cleanse,Thermal Cleansing Function,13,fe,200e,0b20,,,onoff
+w,dhw,thermal_cleanse,Thermal Cleansing Function,,fe,2020,0b20,,,onoff
+
+# Defines the start time of the DHW tank sanitisation function.(1.9.7)
+r,dhw,thermal_cleanse_start_time,Thermal Cleanse Start Time,,fe,2000,7e2b
+b,dhw,thermal_cleanse_start_time,Thermal Cleanse Start Time,13,fe,200f,7e2b,,,hhmm
+w,dhw,thermal_cleanse_start_time,Thermal Cleanse Start Time,70,fe,2020,7e2b,,,hhmm
+r,dhw,thermal_cleanse_start_time_limits,Thermal Cleanse Start Time Limits,,fe,2001,7e2b
+b,dhw,thermal_cleanse_start_time_limits,Thermal Cleanse Start Time Limits,13,fe,200e,7e2b,,,hhmm_min_max
+
+# Sets the period of time after which the DHW tank sanitisation function is repeated. (1.9.8)
+r,dhw,thermal_cleanse_freq,Thermal Cleanse Frequency,,fe,2000,712b
+b,dhw,thermal_cleanse_freq,Thermal Cleanse Frequency,13,fe,200f,712b,,,longminutes:setting
+w,dhw,thermal_cleanse_freq,Thermal Cleanse Frequency,70,fe,2020,712b,,,longminutes:setting
+r,dhw,thermal_cleanse_freq_limits,Thermal Cleanse Frequency Limits,,fe,2001,712b
+b,dhw,thermal_cleanse_freq_limits,Thermal Cleanse Frequency Limits,13,fe,200e,712b,,,longminutes_min_max
+
+# DHW storage temperature (1.16.5)
+# performed regularly by the system
+r,dhw,storage_temperature,Current Storage Temperature,,18,2000,7747,,,ignore_1;temperature:reading
+# Ignore other reads which have DHW temperature
+r,ignored,storage_temperature_2,Current Storage Temperature,,18,2001,7017,,,temperature:reading
+r,ignored,storage_temperature_4,Current Storage Temperature,,18,2000,7017,,,ignore_1;temperature:reading
+r,ignored,storage_temperature_3,Current Storage Temperature,,18,2000,62137017,,,ignore_1;temperature:value_6213;temperature:dhw_store_temp
+
+# PV offset DHW setpoint temperature (1.20.0)
+r,dhw,pv_delta_temperature,Delta temperature for PV Integration,,18,2000,762d,,,ignore_1;temperature:setting
+w,dhw,pv_delta_temperature,Delta temperature for PV Integration,,18,2020,762d,,,temperature:setting
+r,dhw,pv_delta_temperature_limits,Delta temperature for PV Integration Limits,,18,2001,762d,,,temperature_min_max
+
+# Activates integration of the solar heating system. In this case the high sensor of the solar heating tank is used as a DHW tank sensor (1.20.2)
+# Update in Home Asistant disabled as element not present in system
+r,dhw,tank_solar_integration,Tank solar integration,,18,2001,1188,,,onoff
+w,ignored,tank_solar_integration,Tank solar integration,,18,2020,1188,,,onoff
+b,dhw,tank_solar_integration,Tank solar integration,13,18,2010,1188,,m,onoff
+
+# Defines the setpoint of thermal cleanse cycle. (1.23.0)
+r,dhw,thermal_cleanse_temp,Thermal Cleanse Temperature,,fe,2000,7d26
+b,dhw,thermal_cleanse_temp,Thermal Cleanse Temperature,13,fe,200f,7d26,,,temperature:setting
+w,dhw,thermal_cleanse_temp,Thermal Cleanse Temperature,70,fe,2020,7d26,,,temperature:setting
+r,dhw,thermal_cleanse_temp_limits,Thermal Cleanse Temperature Limits,,fe,2001,7d26
+b,dhw,thermal_cleanse_temp_limits,Thermal Cleanse Temperature Limits,13,fe,200e,7d26,,,temperature_min_max
+
+# Defines the time in which the Thermal cleanse Target temp has to be mantained. (1.23.1)
+r,dhw,thermal_cleanse_target_time,Thermal Cleanse Target Time,,fe,2000,d92a
+b,dhw,thermal_cleanse_target_time,Thermal Cleanse Target Time,13,fe,200f,d92a,,,hrs:setting
+w,dhw,thermal_cleanse_target_time,Thermal Cleanse Target Time,70,fe,2020,d92a,,,hrs:setting
+r,dhw,thermal_cleanse_target_time_limits,Thermal Cleanse Target Time Limits,,fe,2001,d92a
+b,dhw,thermal_cleanse_target_time_limits,Thermal Cleanse Target Time Limits,13,fe,200e,d92a,,,hrs_min_max
+
+# Defines the maximum duration of the DHW tank sanitisation function. (1.23.2)
+r,dhw,thermal_cleanse_max_duration,Max Duration Thermal Cleanse,,fe,2000,ca2a
+b,dhw,thermal_cleanse_max_duration,Max Duration Thermal Cleanse,13,fe,200f,ca2a,,,hrs:setting
+w,dhw,thermal_cleanse_max_duration,Max Duration Thermal Cleanse,70,fe,2020,ca2a,,,hrs:setting
+r,dhw,thermal_cleanse_max_duration_limits,Max Duration Thermal Cleanse Limits,,fe,2001,ca2a
+b,dhw,thermal_cleanse_max_duration_limits,Max Duration Thermal Cleanse Limits,13,fe,200e,ca2a,,,hrs_min_max
+

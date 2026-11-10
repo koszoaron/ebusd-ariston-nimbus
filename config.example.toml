@@ -1,0 +1,22 @@
+# Copy to config.local.toml (ignored by git) and edit. Never commit real addresses.
+
+[capture]
+dir = "captures"
+# "file": follow ebusd's raw log (see README). "cmd": follow a command's stdout. "stdin": read a pipe.
+source = "file"
+path = "/path/to/ebusd-raw.log"
+# source = "cmd"
+# cmd = ["docker", "logs", "-f", "--tail", "0", "addon_xxxx_ebusd"]
+gap_seconds = 30
+# Zone of ebusd's timestamps (IANA name). Default: the host's local zone.
+# timezone = "Europe/Berlin"
+
+[sidechannel]
+# dir defaults to capture.dir
+[[sidechannel.sources]]
+type = "shelly_em"      # Shelly Pro 3EM, Gen2 RPC, polled over local HTTP
+name = "meter"
+url = "http://METER-ADDRESS"
+id = 0
+interval = 5
+# metrics = ["total_act_power", "a_act_power", "b_act_power", "c_act_power"]

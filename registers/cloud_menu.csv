@@ -1,0 +1,118 @@
+cloud_id,node,text,unit,min,max,access,register,evidence
+1,T_8.3.5,Outdoor T,°C,-3277,3276,RO,energymgr:7647,fetched 2000 7647; cloud shows whole degrees (21.0 for 21.8)
+2,T_4.3.0,Room T,°C,-3276.8,3276.7,RO,sensys:7118,fetched 2000 7118; zone 1 (zones 2/3: 7218/7318 asked three times each, no answer)
+3,T_5.3.0,Room T,°C,-3276.8,3276.7,RO,(7218),zone 2; nobody answers
+4,T_6.3.0,Room T,°C,-3276.8,3276.7,RO,(7318),zone 3; nobody answers
+8,T_4.3.4,Heat Request Z1,,0,1,RO,energymgr:0191,fetched 2000 0191
+9,T_5.3.4,Heat Request Z2,,0,1,RO,energymgr:0291,fetched 2000 0291
+10,T_6.3.4,Heat Request Z3,,0,1,RO,energymgr:0391,fetched 2000 0391
+14,T_4.3.1,Room T setpoint,°C,-3276.8,3276.7,RO,energymgr:6996,fetched 2000 6996 (22.0)
+15,T_5.3.1,Room T setpoint,°C,-3276.8,3276.7,RO,energymgr:6a96,fetched 2000 6a96 (22.5)
+16,T_6.3.1,Room T setpoint,°C,-3276.8,3276.7,RO,energymgr:6b96,fetched 2000 6b96 (22.5)
+20,U_6.3.3,AUTO function,,0,1,RW,energymgr:0520,fetched 2000 0520
+22,U_3,System operation modes,,0,5,RW,energymgr:0120+0220+0f23,fetched 2001 0120 0220 0f23 (2 = heating only)
+23,U_6.9.2,Comfort Function,,0,5,RW,energymgr:c028,fetched 2001 c028
+24,U_6.9.0,DHW comfort setpoint temp.,°C,35,70,RW,energymgr:6126,fetched 2001 6126
+25,U_0.0,Zone 1,,0,3,RW,energymgr:c679,fetched 2001 c679 (zone mode; 2 = manual)
+26,U_0.1,Zone 2,,0,3,RW,energymgr:c67a,fetched 2001 c67a
+27,U_0.2,Zone 3,,0,3,RW,energymgr:c67b,fetched 2001 c67b
+31,U_6.3.1.0.0,Set comfort temperature,°C,10,30,RW,energymgr:6271,fetched 2001 6271
+32,U_6.3.1.1.0,Set comfort temperature,°C,10,30,RW,energymgr:6272,fetched 2001 6272
+33,U_6.3.1.2.0,Set comfort temperature,°C,10,30,RW,energymgr:6273,fetched 2001 6273
+37,U_6.3.1.0.1,Set reduced temperature,°C,10,30,RW,energymgr:6371,fetched 2001 6371
+38,U_6.3.1.1.1,Set reduced temperature,°C,10,30,RW,energymgr:6372,fetched 2001 6372
+39,U_6.3.1.2.1,Set reduced temperature,°C,10,30,RW,energymgr:6373,fetched 2001 6373
+58,T_17.2.0,Hydraulic scheme,,0,5,RW,energymgr:dc28,fetched 2001 dc28 (5)
+60,T_17.11.0,Heat pump mode,,0,255,RO,energymgr:ca46,fetched 2000 ca46 (15 while idle)
+63,T_17.0.1,Quiet mode activation HHP,,0,1,RW,energymgr:0320,fetched 2001 0320
+67,T_17.14.4,DHW storage temperature,°C,-3277,3276,RO,energymgr:7017,fetched 2001 7017
+71,T_17.10.0,Outside air temperature,°C,-3277,3276,RO,energymgr:7810,fetched 2001 7810 from the energy manager (the heat pump's own air sensor value)
+72,T_19.0.0,ON/OFF Wi-Fi Network,,0,1,RO,gateway (internal),no bus read
+73,U_6.9.1.0.0,Set comfort temperature (DHW),°C,35,70,RW,energymgr:6126,fetched 2001 6126
+74,U_6.9.1.0.1,Set reduced temperature (DHW),°C,10,35,RW,energymgr:6226,fetched 2001 6226
+77,T_4.0.3,Zone frost temperature,°C,2,15,RW,energymgr:6426,fetched 2001 6426 for each of 77-79 (one register for all zones)
+78,T_5.0.3,Zone frost temperature,°C,2,15,RW,energymgr:6426,see 77
+79,T_6.0.3,Zone frost temperature,°C,2,15,RW,energymgr:6426,see 77
+83,T_19.1.6,On line weather data,,0,255,RO,gateway:c19a,no bus read; value 9 equals the gateway's c19a broadcast
+119,T_19.1.1,Signal Level,%,0,255,RO,gateway:c3f0,no bus read (gateway internal); owner sheet c3f0 = 100
+130,T_19.1.5,On line outdoor temperature,°C,-3277,3276,RO,gateway:7617,no bus read; 3276 = not available like the gateway's 7617 broadcast
+133,T_17.15.8,AUX output 1,,0,1,RO,energymgr:1803,fetched in list order during the cloud request
+155,T_4.2.0,Zone temperature range,,0,1,RW,energymgr:0081,fetched in list order during the cloud request
+156,T_5.2.0,Zone temperature range,,0,1,RW,energymgr:0082,fetched in list order during the cloud request
+157,T_6.2.0,Zone temperature range,,0,1,RW,energymgr:0083,fetched in list order during the cloud request
+173,T_17.1.0,HV input 1,,0,4,RW,energymgr:c92a,fetched in list order during the cloud request
+174,T_17.14.6,HV input 1,,0,1,RO,energymgr:1d11,fetched in list order during the cloud request
+175,T_4.8.0,Pilot enable,,0,1,RW,(no bus read),no gateway bus read during the request
+176,T_5.8.0,Pilot enable,,0,1,RW,(no bus read),no gateway bus read during the request
+177,T_6.8.0,Pilot enable,,0,1,RW,(no bus read),no gateway bus read during the request
+178,T_14.8.0,Pilot enable,,0,1,RW,(no bus read),no gateway bus read during the request
+179,T_15.8.0,Pilot enable,,0,1,RW,(no bus read),no gateway bus read during the request
+180,T_16.8.0,Pilot enable,,0,1,RW,(no bus read),no gateway bus read during the request
+208,U_6.9.6,DHW,,0,1,RW,energymgr:0220,fetched in list order during the cloud request
+209,T_4.7.7,Preheating function,,0,1,RW,(no bus read),no gateway bus read during the request
+210,T_5.7.7,Preheating function,,0,1,RW,(no bus read),no gateway bus read during the request
+211,T_6.7.7,Preheating function,,0,1,RW,(no bus read),no gateway bus read during the request
+212,T_14.7.7,Preheating function,,0,1,RW,(no bus read),no gateway bus read during the request
+213,T_15.7.7,Preheating function,,0,1,RW,(no bus read),no gateway bus read during the request
+214,T_16.7.7,Preheating function,,0,1,RW,(no bus read),no gateway bus read during the request
+251,T_17.5.4,Thermal cleanse function,,0,1,RW,energymgr:0b20,fetched in list order during the cloud request
+252,T_17.5.6,Thermal Cleanse Cycle frequency,h,24,481,RW,energymgr:712b,fetched in list order during the cloud request
+253,T_17.9.0,HP running hours (h/10),,0,6553,RO,energymgr:40d1,"fetched in list order during the cloud request; cloud shows the bus count /10 (808 for 8086), like the Sensys"
+254,T_17.9.1,HP on cycles (n/10),,0,2.14748e+08,RO,energymgr:40d8+41d8,fetched in list order during the cloud request; cloud 1944 for 19443 (/10)
+259,T_17.9.6,HP defrost hours (h/10),,0,6553,RO,energymgr:47d1,fetched in list order during the cloud request; cloud 8 for 85 (/10)
+260,T_17.9.7,Cooling running hours (h/10),,0,6553,RO,energymgr:54d1,fetched in list order during the cloud request
+261,T_17.9.8,Heating running hours (h/10),,0,6553,RO,energymgr:55d1,fetched in list order during the cloud request; cloud 1185 for 11857 (/10)
+262,T_17.9.9,DHW running hours (h/10),,0,6553,RO,energymgr:56d1,fetched in list order during the cloud request
+263,T_17.14.1,CH flow set T,°C,-3277,3276,RO,energymgr:6047,fetched in list order during the cloud request
+266,T_17.12.1,HP actual compressor frequency,Hz,0,255,RO,heatpump:cb46 (read from 18),fetched in list order during the cloud request
+275,T_4.0.2,T set Z1,°C,20,45,RW,energymgr:6571,fetched in list order during the cloud request
+276,T_4.5.0,T Set Cool,°C,7,12,RW,energymgr:7071,fetched in list order during the cloud request
+277,T_4.2.9,Heat request mode,,0,2,RW,energymgr:ce79,fetched in list order during the cloud request
+278,T_4.2.1,Thermoregulation,,0,4,RW,energymgr:c079,fetched in list order during the cloud request
+279,T_4.5.2,Thermoregulation,,0,2,RW,energymgr:cb79,fetched in list order during the cloud request
+280,T_4.0.0,T Day,°C,10,30,RW,energymgr:6271,fetched in list order during the cloud request
+281,T_4.0.1,T Night,°C,10,30,RW,energymgr:6371,fetched in list order during the cloud request
+282,T_4.2.3,Offset,,-7,7,RW,energymgr:6471,fetched in list order during the cloud request
+283,T_4.5.4,Offset,,-2.5,2.5,RW,energymgr:7571,fetched in list order during the cloud request
+284,T_5.0.2,T set Z2,°C,20,60,RW,energymgr:6572,fetched in list order during the cloud request
+285,T_5.5.0,T Set Cool,°C,7,12,RW,energymgr:7072,fetched in list order during the cloud request
+286,T_5.2.9,Heat request mode,,0,2,RW,energymgr:ce7a,fetched in list order during the cloud request
+287,T_5.2.1,Thermoregulation,,0,4,RW,energymgr:c07a,fetched in list order during the cloud request
+288,T_5.5.2,Thermoregulation,,0,2,RW,energymgr:cb7a,fetched in list order during the cloud request
+289,T_5.0.0,T Day,°C,10,30,RW,energymgr:6272,fetched in list order during the cloud request
+290,T_5.0.1,T Night,°C,10,30,RW,energymgr:6372,fetched in list order during the cloud request
+291,T_5.2.3,Offset,,-14,14,RW,energymgr:6472,fetched in list order during the cloud request
+292,T_5.5.4,Offset,,-2.5,2.5,RW,energymgr:7572,fetched in list order during the cloud request
+293,T_6.0.2,T set Z3,°C,20,60,RW,energymgr:6573,fetched in list order during the cloud request
+294,T_6.5.0,T Set Cool,°C,7,12,RW,energymgr:7073,fetched in list order during the cloud request
+295,T_6.2.9,Heat request mode,,0,2,RW,energymgr:ce7b,fetched in list order during the cloud request
+296,T_6.2.1,Thermoregulation,,0,4,RW,energymgr:c07b,fetched in list order during the cloud request
+297,T_6.5.2,Thermoregulation,,0,2,RW,energymgr:cb7b,fetched in list order during the cloud request
+298,T_6.0.0,T Day,°C,10,30,RW,energymgr:6273,fetched in list order during the cloud request
+299,T_6.0.1,T Night,°C,10,30,RW,energymgr:6373,fetched in list order during the cloud request
+300,T_6.2.3,Offset,,-14,14,RW,energymgr:6473,fetched in list order during the cloud request
+301,T_6.5.4,Offset,,-2.5,2.5,RW,(no bus read),zone 3 cooling offset (menu 6 = zone 3); no gateway bus read
+369,U_6.10.1,Buffer comfort setpoint heating,°C,20,70,RW,energymgr:692e,fetched 2001 692e (40.0)
+370,U_6.10.3,Buffer comfort setpoint cooling,°C,5,23,RW,energymgr:752e,fetched 2001 752e (18.0)
+371,U_6.10.2,Reduced Setpoint heating,°C,,,RW,(6e8f),asked 2001 6e8f three times; nobody answers; cloud shows 0
+372,U_6.10.4,Reduced Setpoint cooling,°C,,,RW,(6d8f),asked 2001 6d8f three times; nobody answers; cloud shows 0
+373,U_6.6.1.0.0,Set comfort temperature (cooling program),°C,10,30,RW,energymgr:6271,fetched 2001 6271: the cooling time program uses the same comfort register as heating
+374,U_6.6.1.1.0,Set comfort temperature (cooling program),°C,10,30,RW,energymgr:6272,fetched 2001 6272
+375,U_6.6.1.2.0,Set comfort temperature (cooling program),°C,10,30,RW,energymgr:6273,fetched 2001 6273
+379,U_6.6.1.0.2,Set reduced temperature (cooling program),°C,10,30,RW,energymgr:6371,fetched 2001 6371: same reduced register as heating
+380,U_6.6.1.1.2,Set reduced temperature (cooling program),°C,10,30,RW,energymgr:6372,fetched 2001 6372
+381,U_6.6.1.2.2,Set reduced temperature (cooling program),°C,10,30,RW,energymgr:6373,fetched 2001 6373
+394,T_4.6.1,Preheating function state,,0,1,RO,(d994),asked 2000 d994 three times; nobody answers
+395,T_5.6.1,Preheating function state,,0,1,RO,(da94),asked three times; nobody answers
+396,T_6.6.1,Preheating function state,,0,1,RO,(db94),asked three times; nobody answers
+397,T_14.6.1,Preheating function state,,0,1,RO,(dc94),asked three times; nobody answers
+398,T_15.6.1,Preheating function state,,0,1,RO,(dd94),asked three times; nobody answers
+399,T_16.6.1,Preheating function state,,0,1,RO,(de94),asked three times; nobody answers
+409,T_20.0.0,Buffer activation,,0,1,RW,energymgr:1b23,fetched 2001 1b23 (1)
+473,T_0.6.3,Gas cost,euro,,,RW,gateway:432f,fetched 2001 432f; the gateway also broadcasts it (2020)
+474,T_0.6.5,Electricity cost,euro,,,RW,gateway:442f,fetched 2001 442f
+475,T_0.6.6,Electricity cost (low tariff),euro,,,RW,gateway:452f,fetched 2001 452f
+476,T_0.6.0,Currency,,,,RW,gateway:c78b,fetched 2001 c78b
+477,T_0.6.2,Gas units,,,,RW,gateway:c58b,fetched 2001 c58b
+478,T_0.6.1,Gas Type,,,,RW,gateway:c48b,fetched 2001 c48b
+479,T_0.6.4,Electric units,,,,RW,gateway:c68b,fetched 2001 c68b

@@ -1,0 +1,183 @@
+
+############################################################################################
+####                     BUFFER SETTINGS AND MESSAGES                                   ####
+#### address 13: master #12                                                             ####
+#### address 18: slave #12                                                              ####
+############################################################################################
+
+# Buffer settings validated to a degree from panel but buffer not present on system
+
+############################################################################################
+# Buffer
+############################################################################################
+
+# Buffer activation (20.0.0)
+r,buffer,buffer_activation,Buffer Activation,,fe,2001,1b23
+b,buffer,buffer_activation,Buffer Activation,13,fe,200e,1b23,,,onoff
+w,buffer,buffer_activation,Buffer Activation,70,fe,2020,1b23,,,onoff
+b,buffer,buffer_activation_bcast,Buffer Activation,13,fe,2010,1b23,,,onoff
+
+# Buffer charge mode (20.0.1)
+r,buffer,buffer_charge_mode,Buffer Charge Mode,,fe,2001,d12c
+b,buffer,buffer_charge_mode,Buffer Charge Mode,13,fe,200e,d12c,,,buffer_charge_mode
+w,buffer,buffer_charge_mode,Buffer Charge Mode,70,fe,2020,d12c,,,buffer_charge_mode
+b,buffer,buffer_charge_mode_bcast,Buffer Charge Mode,13,fe,2010,d12c,,,buffer_charge_mode
+
+# Buffer setpoint temperature hysteresis (20.0.2)
+r,buffer,buffer_setpoint_hysterisis,Buffer Setpoint Hysteresis,,fe,2000,672e
+b,buffer,buffer_setpoint_hysterisis,Buffer Setpoint Hysteresis,13,fe,200f,672e,,,temperature:setting
+w,buffer,buffer_setpoint_hysterisis,Buffer Setpoint Hysteresis,70,fe,2020,672e
+r,buffer,buffer_setpoint_hysterisis_limits,Buffer Setpoint Hysteresis Limits,,fe,2001,672e
+b,buffer,buffer_setpoint_hysterisis_limits,Buffer Setpoint Hysteresis Limits,13,fe,200e,672e,,,temperature_min_max
+
+# Buffer comfort setpoint heating (20.0.3)
+r,buffer,buffer_comfort_temperature,Buffer Comfort Temperature,,fe,2000,692e
+b,buffer,buffer_comfort_temperature,Buffer Comfort Temperature,13,fe,200f,692e,,,temperature:setting
+w,buffer,buffer_comfort_temperature,Buffer Comfort Temperature,70,fe,2020,692e,,,temperature:setting
+r,buffer,buffer_comfort_temperature_limits,Buffer Comfort Temperature Limits,,fe,2001,692e
+b,buffer,buffer_comfort_temperature_limits,Buffer Comfort Temperature Limits,13,fe,200e,692e,,,temperature_min_max
+b,buffer,buffer_comfort_temperature_bcast,Buffer Comfort Temperature Limits,13,fe,2010,692e,,,temperature
+
+# Buffer comfort setpoint cooling (20.0.4)
+#r,buffer,buffer_comfort_temperature_cooling,Buffer Reduced Temperature Limits,,fe,2000,6d8f
+#b,buffer,buffer_comfort_temperature_cooling,Buffer Reduced Temperature Limits,13,fe,200f,6d8f,,,temperature:setting
+#w,buffer,buffer_comfort_temperature_cooling,Buffer Reduced Temperature Limits,70,fe,2020,6d8f,,,temperature:setting
+#r,buffer,buffer_comfort_temperature_cooling_limits,Buffer Reduced Temperature Limits,,fe,2001,6d8f
+#b,buffer,buffer_comfort_temperature_cooling_limits,Buffer Reduced Temperature Limits,13,fe,200e,6d8f,,,temperature_min_max
+#b,buffer,buffer_comfort_temperature_cooling_bcast,Buffer Reduced Temperature Limits,13,fe,2010,6d8f,,,temperature
+
+# SG Ready Buffer setpoint (20.0.5)
+r,buffer,sg_ready_buffer_setpoint,Buffer Reduced Temperature Limits,,fe,2000,682e
+b,buffer,sg_ready_buffer_setpoint,Buffer Reduced Temperature Limits,,fe,200f,682e,,,temperature:setting
+w,buffer,sg_ready_buffer_setpoint,Buffer Reduced Temperature Limits,,fe,2020,682e,,,temperature:setting
+r,buffer,sg_ready_buffer_setpoint_limits,Buffer Reduced Temperature Limits,,fe,2001,682e
+b,buffer,sg_ready_buffer_setpoint_limits,Buffer Reduced Temperature Limits,13,fe,200e,682e,,,temperature_min_max
+
+# Offset PV integration setpoint (20.0.6)
+# 0°C[0 - 20]°C
+
+# Buffer setpoint mode (20.0.7)
+r,buffer,buffer_setpoint_mode,Buffer Setpoint Mode,,fe,2001,1f23
+b,buffer,buffer_setpoint_mode,Buffer Setpoint Mode,13,fe,200e,1f23,,,buffer_setpoint_mode
+w,buffer,buffer_setpoint_mode,Buffer Setpoint Mode,70,fe,2020,1f23,,,buffer_setpoint_mode
+b,buffer,buffer_setpoint_mode_bcast,Buffer Setpoint Mode,13,fe,2010,1f23,,,buffer_setpoint_mode
+
+# Buffer hysteresis cooling (20.0.8)
+# 5°C [0 - 20]°C
+
+############################################################################################
+# Buffer Diagnostics
+############################################################################################
+
+# Low sensor temperature (20.1.0)
+r,buffer,buffer_low_temperature_sensor,buffer low temperature sensor,,fe,2001,769e
+b,buffer,buffer_low_temperature_sensor,buffer low temperature sensor,13,fe,200e,769e,,,temperature:reading
+
+# High sensor temperature (20.1.2)
+r,buffer,buffer_high_temperature_sensor,buffer high temperature sensor,,fe,2000,759e
+b,buffer,buffer_high_temperature_sensor,buffer high temperature sensor,13,fe,200f,759e,,,temperature:reading
+b,buffer,buffer_high_temperature_sensor_panel,buffer high temperature sensor,13,fe,200e,759e,,,temperature:reading
+
+b,buffer,temperature_sensor_bcast,buffer high temperature sensor,13,fe,2010,759e,,m,temperature:high_temperature;ignore_2;temperature:low_temperature
+
+# Buffer charge request (20.1.3)
+# 0 = OFF ¦ 1 = ON
+
+# Buffer status (20.1.4)
+r,buffer,buffer_status,unknown,,fe,2000,ccf7
+b,buffer,buffer_status,unknown,,fe,200f,ccf7,,,ignore_1;buffer_status
+r,buffer,buffer_status_panel,unknown,,fe,2001,ccf7
+
+############################################################################################
+# Statistics
+############################################################################################
+
+# Buffer charge hours Heating (/10) (20.2.2)
+r,buffer,buffer_charge_hours_heating,Buffer Charge Hours Heating,,18,2000,5ad1,,,ignore_1;hours
+
+# Buffer charge hours Cooling (/10) (20.2.3)
+r,buffer,buffer_charge_hours_cooling,Buffer Charge Hours Cooling,,18,2000,5bd1,,,ignore_1;hours
+
+############################################################################################
+# Time program
+############################################################################################
+
+# Control mode (20.3.0)
+r,buffer,buffer_control_mode,Buffer Control Mode,,fe,2001,d62c
+b,buffer,buffer_control_mode,Buffer Control Mode,13,fe,200e,d62c,,,control_mode
+w,buffer,buffer_control_mode,Buffer Control Mode,70,fe,2020,d62c,,,control_mode
+b,buffer,buffer_control_mode_bcast,Buffer Control Mode,13,fe,2010,d62c,,,control_mode
+
+# Reduced Setpoint heating (20.3.1)
+r,buffer,buffer_reduced_temperature,Buffer Reduced Temperature Limits,,fe,2000,6e8f
+b,buffer,buffer_reduced_temperature,Buffer Reduced Temperature Limits,13,fe,200f,6e8f,,,temperature:setting
+w,buffer,buffer_reduced_temperature,Buffer Reduced Temperature Limits,70,fe,2020,6e8f,,,temperature:setting
+r,buffer,buffer_reduced_temperature_limits,Buffer Reduced Temperature Limits,,fe,2001,6e8f
+b,buffer,buffer_reduced_temperature_limits,Buffer Reduced Temperature Limits,13,fe,200e,6e8f,,,temperature_min_max
+b,buffer,buffer_reduced_temperature_bcast,Buffer Reduced Temperature Limits,13,fe,2010,6e8f,,,temperature
+
+# Reduced Setpoint cooling (20.3.2)
+r,buffer,buffer_reduced_temperature_cooling,Buffer Reduced Temperature Limits,,fe,2000,6d8f
+b,buffer,buffer_reduced_temperature_cooling,Buffer Reduced Temperature Limits,13,fe,200f,6d8f,,,temperature:setting
+w,buffer,buffer_reduced_temperature_cooling,Buffer Reduced Temperature Limits,70,fe,2020,6d8f,,,temperature:setting
+r,buffer,buffer_reduced_temperature_cooling_limits,Buffer Reduced Temperature Limits,,fe,2001,6d8f
+b,buffer,buffer_reduced_temperature_cooling_limits,Buffer Reduced Temperature Limits,13,fe,200e,6d8f,,,temperature_min_max
+b,buffer,buffer_reduced_temperature_cooling_bcast,Buffer Reduced Temperature Limits,13,fe,2010,6d8f,,,temperature
+
+############################################################################################
+# System Settings
+############################################################################################
+
+# Buffer integration scheme (20.4.0)
+r,buffer,buffer_integration_scheme,Buffer Integration Scheme,,fe,2001,d28d
+b,buffer,buffer_integration_scheme,Buffer Integration Scheme,13,fe,200e,d28d,,,buffer_integration
+w,buffer,buffer_integration_scheme,Buffer Integration Scheme,70,fe,2020,d28d,,,buffer_integration
+
+# Buffer solar integration (20.4.1)
+r,buffer,buffer_solar_integration,Buffer Solar Integration,,fe,2001,1888
+b,buffer,buffer_solar_integration,Buffer Solar Integration,13,fe,200e,1888,,,onoff
+w,buffer,buffer_solar_integration,Buffer Solar Integration,70,fe,2020,1888,,,onoff
+
+# Buffer offset compensation heating (20.4.2)
+r,buffer,buffer_offset_compensation_heating,Buffer Reduced Temperature Limits,,fe,2000,6824
+b,buffer,buffer_offset_compensation_heating,Buffer Reduced Temperature Limits,13,fe,200f,6824,,,temperature:setting
+w,buffer,buffer_offset_compensation_heating,Buffer Reduced Temperature Limits,70,fe,2020,6824,,,temperature:setting
+r,buffer,buffer_offset_compensation_heating_limits,Buffer Reduced Temperature Limits,,fe,2001,6824
+b,buffer,buffer_offset_compensation_heating_limits,Buffer Reduced Temperature Limits,13,fe,200e,6824,,,temperature_min_max
+b,buffer,buffer_offset_compensation_heating_bcast,Buffer Reduced Temperature Limits,13,fe,2010,6824,,,temperature
+
+# Buffer offset compensation cooling (20.4.3)
+r,buffer,buffer_offset_compensation_cooling,Buffer Reduced Temperature Limits,,fe,2000,6924
+b,buffer,buffer_offset_compensation_cooling,Buffer Reduced Temperature Limits,13,fe,200f,6924,,,temperature:setting
+w,buffer,buffer_offset_compensation_cooling,Buffer Reduced Temperature Limits,70,fe,2020,6924,,,temperature:setting
+r,buffer,buffer_offset_compensation_cooling_limits,Buffer Reduced Temperature Limits,,fe,2001,6924
+b,buffer,buffer_offset_compensation_cooling_limits,Buffer Reduced Temperature Limits,13,fe,200e,6924,,,temperature_min_max
+b,buffer,buffer_offset_compensation_cooling_bcast,Buffer Reduced Temperature Limits,13,fe,2010,6924,,,temperature
+
+# Buffer electric integration offset (20.4.4)
+r,buffer,buffer_electric_integration_offset,Buffer Reduced Temperature Limits,,fe,2000,6a2e
+b,buffer,buffer_electric_integration_offset,Buffer Reduced Temperature Limits,13,fe,200f,6a2e,,,temperature:setting
+w,buffer,buffer_electric_integration_offset,Buffer Reduced Temperature Limits,70,fe,2020,6a2e,,,temperature:setting
+r,buffer,buffer_electric_integration_offset_limits,Buffer Reduced Temperature Limits,,fe,2001,6a2e
+b,buffer,buffer_electric_integration_offset_limits,Buffer Reduced Temperature Limits,13,fe,200e,6a2e,,,temperature_min_max
+b,buffer,buffer_electric_integration_offset_bcast,Buffer Reduced Temperature Limits,13,fe,2010,6a2e,,,temperature
+
+# CH switch off offset (20.4.5)
+r,buffer,ch_switch_off_offset,Buffer Reduced Temperature Limits,,fe,2000,6a24
+b,buffer,ch_switch_off_offset,Buffer Reduced Temperature Limits,13,fe,200f,6a24,,,temperature:setting
+w,buffer,ch_switch_off_offset,Buffer Reduced Temperature Limits,70,fe,2020,6a24,,,temperature:setting
+r,buffer,ch_switch_off_offset_limits,Buffer Reduced Temperature Limits,,fe,2001,6a24
+b,buffer,ch_switch_off_offset_limits,Buffer Reduced Temperature Limits,13,fe,200e,6a24,,,temperature_min_max
+b,buffer,ch_switch_off_offset_bcast,Buffer Reduced Temperature Limits,13,fe,2010,6a24,,,temperature
+
+# Cooling switch off offset (20.4.6)
+r,buffer,cooling_switch_off_offset,Buffer Reduced Temperature Limits,,fe,2000,6b24
+b,buffer,cooling_switch_off_offset,Buffer Reduced Temperature Limits,13,fe,200f,6b24,,,temperature:setting
+w,buffer,cooling_switch_off_offset,Buffer Reduced Temperature Limits,70,fe,2020,6b24,,,temperature:setting
+r,buffer,cooling_switch_off_offset_limits,Buffer Reduced Temperature Limits,,fe,2001,6b24
+b,buffer,cooling_switch_off_offset_limits,Buffer Reduced Temperature Limits,13,fe,200e,6b24,,,temperature_min_max
+b,buffer,cooling_switch_off_offset_bcast,Buffer Reduced Temperature Limits,13,fe,2010,6b24,,,temperature
+
+b,buffer,buffer_mode_bcast,Buffer Mode Broadcast,13,fe,2020,1b23,,,onoff:buffer_activation;ignore_2;buffer_setpoint_mode;ignore_2;onoff:buffer_solar_integration
+b,buffer,buffer_temperature_bcast_1,Buffer Temperature Broadcast,13,fe,2020,6e8f,,,temperature:buffer_reduced_temp;ignore_2;temperature:buffer_comfort_temperature_cooling;ignore_2;buffer_charge_mode:buffer_charge_mode
+b,buffer,buffer_temperature_bcast_2,Buffer Temperature Broadcast,13,fe,2020,672e,,,temperature:buffer_setpoint_hysterisis;ignore_2;temperature:unknown_682e;ignore_2;temperature:buffer_comfort_temp

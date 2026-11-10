@@ -1,0 +1,167 @@
+# Heating dashboard view (M4). A "sections" view for any dashboard: open the dashboard, Edit >
+# three dots > Raw configuration editor, and add this under "views:" (indent it as one list item).
+#
+# Entity ids are the ones a fresh install creates: the ebusd entities with the "heating_" area
+# prefix (see ha/climate_zone1.yaml), the template, integration and utility_meter sensors of
+# ha/cop.yaml and ha/merged.yaml under their default ids, and the counter of ha/ebus_health.yaml.
+# If you created any of them as UI helpers or renamed them, change the ids here.
+# SHELLY_TOTAL_ACTIVE_POWER is the meter for the whole heating system, as in ha/cop.yaml.
+
+title: Heating
+path: heating
+icon: mdi:heat-pump
+type: sections
+max_columns: 3
+sections:
+  - type: grid
+    cards:
+      - type: heading
+        heading: Zone 1
+        heading_style: title
+      - type: thermostat
+        entity: climate.zone_1
+        features:
+          - type: climate-hvac-modes
+      - type: tile
+        entity: sensor.heating_ebusd_sensys_zone_1_room_temperature
+        name: Room
+      - type: tile
+        entity: sensor.heating_ebusd_energymgr_outdoor_temperature
+        name: Outdoor
+      - type: tile
+        entity: binary_sensor.heating_ebusd_energymgr_zone_1_heat_request
+        name: Heat request
+      - type: tile
+        entity: binary_sensor.heating_ebusd_sensys_zone_1_override_active
+        name: Override
+      - type: tile
+        entity: input_number.zone1_override_minutes
+        name: Override duration
+      - type: tile
+        entity: sensor.zone_1_flow_target
+        name: Flow target
+        vertical: false
+        features_position: bottom
+      - type: tile
+        entity: sensor.zone_1_heating_curve_offset
+        name: Curve offset
+        vertical: false
+        features_position: bottom
+      - type: history-graph
+        title: Room and outdoor
+        hours_to_show: 48
+        entities:
+          - entity: sensor.heating_ebusd_sensys_zone_1_room_temperature
+            name: Room
+          - entity: sensor.heating_ebusd_energymgr_outdoor_temperature
+            name: Outdoor
+  - type: grid
+    cards:
+      - type: heading
+        heading: Heat pump
+        heading_style: title
+      - type: tile
+        entity: sensor.heating_ebusd_heatpump_heat_pump_status
+        name: Status
+      - type: tile
+        entity: sensor.heating_ebusd_energymgr_energy_manager_status
+        name: Energy manager
+      - type: tile
+        entity: binary_sensor.heating_ebusd_heatpump_compressor_on
+        name: Compressor
+      - type: tile
+        entity: sensor.heating_ebusd_heatpump_compressor_frequency
+        name: Frequency
+      - type: tile
+        entity: sensor.buffer_temperature
+        name: Buffer
+        vertical: false
+        features_position: bottom
+      - type: tile
+        entity: sensor.flow_setpoint
+        name: Flow setpoint
+      - type: tile
+        entity: sensor.heat_pump_heat_output
+        name: Heat output
+        vertical: false
+        features_position: bottom
+      - type: tile
+        entity: sensor.SHELLY_TOTAL_ACTIVE_POWER
+        name: Electrical power
+        vertical: false
+        features_position: bottom
+      - type: tile
+        entity: sensor.heat_pump_cop_live
+        name: COP (10 min)
+        vertical: false
+        features_position: bottom
+      - type: tile
+        entity: sensor.heat_pump_cop_today
+        name: COP today
+        vertical: false
+        features_position: bottom
+      - type: history-graph
+        entities:
+          - entity: sensor.buffer_temperature
+            name: Buffer
+          - entity: sensor.heating_ebusd_heatpump_flow_temperature
+            name: Flow
+          - entity: sensor.heating_ebusd_heatpump_return_temperature
+            name: Return
+          - entity: sensor.zone_1_flow_target
+            name: Flow target
+        title: Water temperatures
+        hours_to_show: 24
+      - type: history-graph
+        title: Compressor
+        hours_to_show: 24
+        entities:
+          - entity: sensor.heating_ebusd_heatpump_compressor_frequency
+            name: Frequency
+          - entity: sensor.heating_ebusd_heatpump_electrical_power
+            name: Outdoor unit power
+  - type: grid
+    cards:
+      - type: heading
+        heading: Energy and counters
+        heading_style: title
+      - type: tile
+        entity: sensor.hp_heat_today
+        name: Heat today
+        vertical: false
+        features_position: bottom
+      - type: tile
+        entity: sensor.hp_electric_energy_today
+        name: Electricity today
+        vertical: false
+        features_position: bottom
+      - type: tile
+        entity: sensor.heating_ebusd_energymgr_compressor_starts
+        name: Compressor starts
+      - type: tile
+        entity: sensor.heating_ebusd_energymgr_compressor_running_hours
+        name: Compressor hours
+      - type: statistics-graph
+        entities:
+          - sensor.hp_heat_energy
+          - sensor.hp_electric_energy
+        title: Daily energy
+        days_to_show: 14
+        period: day
+        chart_type: bar
+        stat_types:
+          - change
+      - type: heading
+        heading: eBUS
+        heading_style: subtitle
+      - type: tile
+        entity: binary_sensor.ebusd_ebusd_running
+        name: ebusd running
+      - type: tile
+        entity: binary_sensor.ebusd_ebusd_signal
+        name: Bus signal
+      - type: tile
+        entity: counter.ebus_reads_without_reply
+        name: Reads without reply
+        vertical: false
+        features_position: bottom

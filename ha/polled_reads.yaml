@@ -1,0 +1,85 @@
+# HA-triggered reads of the heat pump diagnostics (M2). Put this file in <config>/packages/ (see
+# ha/cop.yaml). ebusd does not poll these itself (config/polled.csv has no poll priority); each
+# MQTT "get" below makes ebusd send exactly one read on the bus, and the values come back as the
+# usual ebusd entities (Evaporator pressure, Fan 1 speed, Compressor preheating, ...).
+#
+# When: once a minute while the heat pump status is not Off / Stand by / Soft Fail Mode (this unit
+# reports Soft Fail Mode while idle), and once on every status change, so the first and the last
+# values of a run are caught. 4 reads per round, 5 s apart (20 s per round), about 1 % of the bus
+# traffic while running. A trigger that arrives while a round runs is dropped silently.
+#
+# Needs: the HA MQTT user may publish to these four topics (EMQX ACL), and ebusd without --readonly.
+# Keep the payload empty: a payload "?N" (N = 1-9) would make ebusd poll that message by itself
+# from then on, which the whitelist does not allow.
+
+script:
+  hp_read_diagnostics:
+    alias: "Heat pump: read diagnostics over eBUS"
+    # queued, not single: a status-change round that arrives during an idle read (5 s) waits for it
+    # instead of being dropped; queued runs execute one after another, so requests stay 5 s apart
+    mode: queued
+    max: 2
+    max_exceeded: silent
+    fields:
+      messages:
+        description: "ebusd messages to read (default: all four)"
+        example: "[hp_poll_compressor]"
+    sequence:
+      - repeat:
+          for_each: >
+            {{ messages if messages is defined else
+               ['hp_poll_pressures', 'hp_poll_compressor', 'hp_poll_valve_fans', 'hp_poll_heater_protection'] }}
+          sequence:
+            - action: mqtt.publish
+              data:
+                topic: "ebusd/heatpump/{{ repeat.item }}/get"
+                payload: ""
+            # one request at a time: four requests at once made ebusd retry in lockstep with the
+            # Sensys (both lose every arbitration, ~15 collisions in a row on 2026-10-12 11:28);
+            # with ebusd's own polling, one request every 8 s, runs stayed at 1-4 collisions
+            - delay: { seconds: 5 }
+
+automation:
+  - id: hp_read_diagnostics_while_active
+    alias: "Heat pump: read diagnostics while active"
+    mode: single
+    max_exceeded: silent
+    triggers:
+      # once a minute at second 19: reads at :19, :24, :29, :34, seconds where the Sensys sends little.
+      # Its busiest second is :15 (2026-10-12: ~2x the average); a round starting at :00 put its last
+      # read there, and it lost every arbitration to the Sensys in lockstep
+      - trigger: time_pattern
+        seconds: 19
+        id: tick
+      - trigger: state
+        entity_id: sensor.heating_ebusd_heatpump_heat_pump_status
+        not_to: [unknown, unavailable]
+        id: change
+    conditions:
+      - condition: template
+        value_template: >
+          {{ trigger.id == 'change'
+             or states('sensor.heating_ebusd_heatpump_heat_pump_status')
+                not in ['Off', 'Stand by', 'Soft Fail Mode', 'unknown', 'unavailable'] }}
+    actions:
+      - action: script.hp_read_diagnostics
+
+  # Optional, off by default: while idle, one read every 10 min of hp_poll_compressor only (fan 2
+  # speed, compressor on, compressor preheating), to follow the preheating (about 70 W, switches on
+  # during long or cold pauses). Enable it in Settings > Automations.
+  - id: hp_read_diagnostics_while_idle
+    alias: "Heat pump: read diagnostics while idle (every 10 min)"
+    initial_state: false
+    mode: single
+    max_exceeded: silent
+    triggers:
+      - trigger: time_pattern
+        minutes: "/10"
+    conditions:
+      - condition: state
+        entity_id: sensor.heating_ebusd_heatpump_heat_pump_status
+        state: ['Off', 'Stand by', 'Soft Fail Mode']
+    actions:
+      - action: script.hp_read_diagnostics
+        data:
+          messages: [hp_poll_compressor]

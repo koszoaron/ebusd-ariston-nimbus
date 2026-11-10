@@ -1,0 +1,14 @@
+[Unit]
+Description=eBUS power meter side channel
+After=network-online.target
+
+[Service]
+Type=simple
+User=ebus
+WorkingDirectory=/opt/ebusd-ariston-nimbus
+ExecStart=/opt/ebusd-ariston-nimbus/.venv/bin/ebus-sidechannel --config /opt/ebusd-ariston-nimbus/config.local.toml
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

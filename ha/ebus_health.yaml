@@ -1,0 +1,125 @@
+# eBUS health alert (M4 step 2). Put this file in <config>/packages/ (see ha/cop.yaml).
+#
+# Raises a notification when ebusd cannot reach the bus, without anyone having to try something:
+#
+# 1. ebusd cannot send. After the 2026-10-20 power outage the adapter kept reading the bus (every
+#    broadcast still arrived, ebusd's signal stayed on) but wrote nothing, and every ebusd read
+#    failed with "arbitration lost" for two days. A failed read publishes nothing on the message's
+#    state topic; a successful one always does, even when the values did not change (checked with a
+#    private ebusd on a bus that never echoes, tests/test_health_ebusd.py). So: count the heat pump
+#    reads HA requests (ha/polled_reads.yaml, 4 per round) and reset the count on any reply. Twelve
+#    requests without a reply = three full rounds. Rounds run every minute while the heat pump is
+#    active and once per status change while idle, so this fires within minutes of the next heat
+#    pump start (or the next status change).
+# 2. ebusd stopped: its retained "running" topic goes false (it is ebusd's MQTT last will).
+# 3. No bus signal: the adapter receives nothing (disconnected, or the bus is down).
+#
+# The notification is dismissed when the condition clears. Needs ha/polled_reads.yaml (case 1)
+# and HA's MQTT user allowed to subscribe to ebusd/# (as for all ebusd entities). Check the two
+# binary sensor ids against yours (ebusd's global "running" and "signal" entities).
+
+counter:
+  ebus_reads_without_reply:
+    name: "eBUS reads without a reply"
+    icon: mdi:lan-disconnect
+    initial: 0
+    step: 1
+
+automation:
+  - id: ebus_health_read_requested
+    alias: "eBUS health: count read requests"
+    mode: queued
+    max: 20
+    triggers:
+      # HA's own requests come back on its subscription
+      - trigger: mqtt
+        topic: "ebusd/heatpump/+/get"
+    actions:
+      - action: counter.increment
+        target: { entity_id: counter.ebus_reads_without_reply }
+
+  - id: ebus_health_read_answered
+    alias: "eBUS health: reset on a reply"
+    mode: queued
+    max: 20
+    triggers:
+      - trigger: mqtt
+        topic: "ebusd/heatpump/hp_poll_pressures"
+      - trigger: mqtt
+        topic: "ebusd/heatpump/hp_poll_compressor"
+      - trigger: mqtt
+        topic: "ebusd/heatpump/hp_poll_valve_fans"
+      - trigger: mqtt
+        topic: "ebusd/heatpump/hp_poll_heater_protection"
+    actions:
+      - action: counter.reset
+        target: { entity_id: counter.ebus_reads_without_reply }
+
+  - id: ebus_health_alert
+    alias: "eBUS health: alert"
+    mode: queued
+    max: 5
+    triggers:
+      - trigger: numeric_state
+        entity_id: counter.ebus_reads_without_reply
+        above: 11
+        id: no_reply
+      - trigger: state
+        entity_id: binary_sensor.ebusd_ebusd_running
+        to: "off"
+        for: { minutes: 2 }
+        id: not_running
+      - trigger: state
+        entity_id: binary_sensor.ebusd_ebusd_signal
+        to: "off"
+        for: { minutes: 5 }
+        id: no_signal
+    actions:
+      - action: persistent_notification.create
+        data:
+          notification_id: "ebus_health_{{ trigger.id }}"
+          title: >
+            {{ {'no_reply': 'eBUS: ebusd cannot send',
+                'not_running': 'eBUS: ebusd is not running',
+                'no_signal': 'eBUS: no bus signal'}[trigger.id] }}
+          message: >
+            {% if trigger.id == 'no_reply' %}
+            The last {{ states('counter.ebus_reads_without_reply') }} heat pump reads got no reply.
+            Open the eBUS adapter's status page and look at the "eBUS/Host r/w" counter. If the bus
+            write count does not rise at the next read round, restart the adapter (restarting ebusd
+            alone does not help). This happens after a power loss.
+            {% elif trigger.id == 'not_running' %}
+            The ebusd add-on has been stopped for 2 minutes. Check the add-on and its log, then
+            restart it.
+            {% else %}
+            ebusd has had no signal from the bus for 5 minutes. Check that the eBUS adapter is
+            powered and connected and that the heating system is on; restart the adapter if its
+            status page shows no bus traffic.
+            {% endif %}
+
+  - id: ebus_health_clear
+    alias: "eBUS health: clear the alert"
+    mode: queued
+    max: 5
+    triggers:
+      # only a reset after an alert: the counter returns to 0 after every answered round
+      - trigger: state
+        entity_id: counter.ebus_reads_without_reply
+        to: "0"
+        id: no_reply
+      - trigger: state
+        entity_id: binary_sensor.ebusd_ebusd_running
+        to: "on"
+        id: not_running
+      - trigger: state
+        entity_id: binary_sensor.ebusd_ebusd_signal
+        to: "on"
+        id: no_signal
+    conditions:
+      - condition: template
+        value_template: >
+          {{ trigger.id != 'no_reply' or trigger.from_state.state | int(0) > 11 }}
+    actions:
+      - action: persistent_notification.dismiss
+        data:
+          notification_id: "ebus_health_{{ trigger.id }}"

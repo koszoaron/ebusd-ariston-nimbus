@@ -1,0 +1,372 @@
+############################################################################################
+####                             ENERGY MANAGER BASE SETTINGS and MESSAGES             
+#### address 13: master #12                                                             
+#### address 18: slave #12                                                             
+#### address 70: master #4   
+############################################################################################
+
+r,energymgr,config_version,config_version_counter,,18,2000,d140,,,ignore_1;version
+
+r,energymgr,last_error_info,last_error,,18,2002,0400,,s,error_code,,,7 first bits,zone,s,BI0:7,,,,,s,IGN:2,,,Date: YY/MM/DD,year,s,UCH,,,,month,s,UCH,,,,day,s,UCH,,,,time,s,HTM,,
+
+############################################################################################
+# Basic Parameters - made read only to avoid accidental changes.                           #
+############################################################################################
+
+# Internal Unit Version (1.0.0)
+r,energymgr,idu_type,Indoor Unit Type,,18,2001,d18d,,,idu_type
+w,ignored,idu_type,Indoor Unit Type,,18,2020,d18d,,,idu_type
+
+# External Unit Version (1.0.1)
+r,energymgr,odu_type,Outdoor Unit Type,,18,2001,ce8d,,,odu_type
+
+# Tank management configuration (1.0.2)
+r,energymgr,tank_management,statistics,,18,2001,d58d,,,tank_management
+w,ignored,tank_management,statistics,,18,2020,d58d,,,tank_management
+
+# Thermoregulation setting (1.0.6)
+r,energymgr,thermoregulation,statistics,,fe,2001,0520
+b,energymgr,thermoregulation,statistics,13,fe,200e,0520,,,onoff
+w,ignored,thermoregulation,statistics,,fe,2020,0520,,,onoff
+
+############################################################################################
+# Input Configuration  
+############################################################################################
+
+# Defines the setting for HV Input 1 (1.1.0)
+# Update in Home Asistant disabled as not relevant in my system
+r,energymgr,hv_input_1,HV Input 1,,18,2001,c92a,,,hv_input_1
+w,ignored,hv_input_1,HV Input 1,,18,2020,c92a,,,hv_input_1
+b,energymgr,hv_input_1,HV Input 1,13,18,2010,c92a,,m,hv_input_1
+
+# Defines the setting for HV Input 2 (1.1.1)
+# Update in Home Asistant disabled as not relevant in my system
+r,energymgr,hv_input_2,HV Input 2,,18,2001,cb2a,,,hv_input_2
+w,ignored,hv_input_2,HV Input 2,,18,2020,cb2a,,,hv_input_2
+b,energymgr,hv_input_2,HV Input 2,13,18,2010,cb2a,,m,hv_input_2
+
+# Defines the setting for AUX Input 1 (1.1.3)
+# Used for PV integration connected to an Eddi on this system
+r,energymgr,aux_input_1,Aux Input 1,,18,2001,d42a,,,aux_input
+w,energymgr,aux_input_1,Aux Input 1,,18,2020,d42a,,,aux_input
+b,energymgr,aux_input_1,Aux Input 1,13,18,2010,d42a,,m,aux_input
+
+# Defines the setting for AUX Input 2 (1.1.4)
+# Update in Home Asistant disabled as not relevant in my system
+r,energymgr,aux_input_2,Aux Input 2 - Default Safety Thermostat,,18,2001,dd8d,,,aux_input
+w,ignored,aux_input_2,Aux Input 2 - Default Safety Thermostat,,18,2020,dd8d,,,aux_input
+b,energymgr,aux_input_2,Aux Input 2 - Default Safety Thermostat,13,18,2010,dd8d,,m,aux_input
+
+# Energy provider blocking functionality (1.1.5)
+# Update in Home Asistant disabled as not relevant in my system
+r,energymgr,heat_blocking_device,Heat Blocking Device,,18,2001,c38f,,,lockout_type
+w,ignored,heat_blocking_device,Heat Blocking Device,,18,2020,c38f,,,lockout_type
+b,energymgr,heat_blocking_device,Heat Blocking Device,13,18,2010,c38f,,m,lockout_type
+
+# CH Press Detection Device (1.1.7)
+# Not Defined
+
+# System temperature probe selection (1.1.8)
+# Update in Home Asistant disabled as is installation parameter
+r,energymgr,system_flow_t_selection,,,18,2001,1688,,,system_flow_temp_selection
+w,ignored,system_flow_t_selection,,,18,2020,1688,,,system_flow_temp_selection
+b,energymgr,system_flow_t_selection,,13,18,2010,1688,,m,system_flow_temp_selection
+
+# Hunidity input zone selection (1.1.9)
+# Update in Home Asistant disabled as only single zone available
+r,energymgr,humidity_input,Humidity Input Zone,,18,2001,cd2f,,,humidity_input
+w,ignored,humidity_input,Humidity Input Zone,,18,2020,cd2f,,,humidity_input
+b,energymgr,humidity_input,Humidity Input Zone,13,18,2010,cd2f,,m,humidity_input
+
+
+############################################################################################
+# Output Configuration - 
+############################################################################################
+
+# Defines the setting for AUX Output 1 (1.2.0) 
+# Used for PV integration connected to an Eddi on this system
+r,energymgr,aux_output_1,Aux 1 Output,,18,2001,cc2a,,,aux_output
+w,energymgr,aux_output_1,Aux 1 Output,,18,2020,cc2a,,,aux_output
+b,energymgr,aux_output_1,Aux 1 Output,13,18,2010,cc2a,,m,aux_output
+
+# Defines the setting for AUX Output 2 (1.2.1) 
+# Update in Home Asistant disabled as not relevant in my system
+r,energymgr,aux_output_2,Aux Output 2,,18,2001,d32a,,,aux_output
+w,ignored,aux_output_2,Aux Output 2,,18,2020,d32a,,,aux_output
+b,energymgr,aux_output_2,Aux Output 2,13,18,2010,d32a,,m,aux_output
+
+# Defines the setting for AUX Output 3 (1.2.2) 
+# Update in Home Asistant disabled as not relevant in my system
+r,energymgr,aux_output_3,Aux Output 3,,18,2001,db8d,,,aux_output
+w,ignored,aux_output_3,Aux Output 3,,18,2020,db8d,,,aux_output
+b,energymgr,aux_output_3,Aux Output 3,13,18,2010,db8d,,m,aux_output
+
+# Defines the setting for AUX Output 4 (1.2.3) 
+# Update in Home Asistant disabled as not relevant in my system
+r,energymgr,aux_output_4,Aux Output 4,,18,2001,dc8d,,,aux_output
+w,ignored,aux_output_4,Aux Output 4,,18,2020,dc8d,,,aux_output
+b,energymgr,aux_output_4,Aux Output 4,13,18,2010,dc8d,,m,aux_output
+
+# Defines the use of the AUX P2 Curculator (1.2.5)
+# Update in Home Asistant disabled as not relevant in my system
+r,energymgr,aux_p2_circulator,Aux P2 Circulator,,18,2001,cf2c,,,aux_p2_circulator
+w,ignored,aux_p2_circulator,Aux P2 Circulator,,18,2020,cf2c,,,aux_p2_circulator
+b,energymgr,aux_p2_circulator,Aux P2 Circulator,13,18,2010,cf2c,,m,aux_p2_circulator
+
+# Indicates the presence of the impressed-current anode on the DHW tank. (1.2.6)
+# Update in Home Asistant disabled as not relevant in my system
+r,energymgr,protech_anode,Protech Anode - not present,,18,2001,0d23,,,onoff
+w,ignored,protech_anode,Protech Anode - not present,,18,2020,0d23,,,onoff
+b,energymgr,protech_anode,Protech Anode - not present,13,18,2010,0d23,,m,onoff
+
+############################################################################################
+# ENERGY MANAGER PARAMETER 1
+############################################################################################
+
+# External temperature correction (1.5.5)
+r,energymgr,ext_temp_correct,External Temperature Correction,,fe,2000,7426
+b,energymgr,ext_temp_correct,External Temperature Correction,13,fe,200f,7426,,,temperature:setting
+w,energymgr,ext_temp_correct,External Temperature Correction,70,fe,2020,7426,,,temperature:setting
+r,energymgr,ext_temp_correct_limits,External Temperature Correction,,fe,2001,7426
+b,energymgr,ext_temp_correct_limits,External Temperature Correction,13,fe,200e,7426,,,temperature_min_max
+b,ignored,ext_temp_correct_bcast,External Temperature Correction,13,fe,2010,7426,,,temperature:setting
+
+
+############################################################################################
+# Water Circulation - 
+############################################################################################
+
+# Defines the pre-circulation time of the primary circulation pump to detect the presence of flow in the heating circuit. (1.6.0)
+# Update in Home Asistant disabled as is installation parameter
+r,energymgr,pump_prerun,statistics,,18,2000,d527,,,ignore_1;minutes
+w,ignored,pump_prerun,statistics,,18,2020,d527,,,minutes
+b,energymgr,pump_prerun,statistics,13,18,2010,d527,,m,minutes
+r,energymgr,pump_prerun_limits,statistics,,18,2001,d527,,,minutes_min_max
+
+# Defines the pre-circulation time of the primary circulation pump to detect the presence of flow in the heating circuit. (1.6.1)
+# Update in Home Asistant disabled as is installation parameter
+r,energymgr,new_attempt_time,statistics,,18,2000,d627,,s,ignore_1;minutes
+w,ignored,new_attempt_time,statistics,,18,2020,d627,,,minutes
+b,energymgr,new_attempt_time,statistics,13,18,2010,d627,,m,minutes
+r,energymgr,new_attempt_time_limits,statistics,,18,2001,d627,,,minutes_min_max
+
+# Post-circulation time. (1.6.2)
+# Update in Home Asistant disabled as is installation parameter
+r,energymgr,pump_overrun,statistics,,18,2000,d727,,,ignore_1;minutes
+w,ignored,pump_overrun,statistics,,18,2020,d727,,,minutes
+b,energymgr,pump_overrun,statistics,13,18,2010,d727,,m,minutes
+r,energymgr,pump_overrun_limits,statistics,,18,2001,d727,,,minutes_min_max
+
+# Pump Speed Control (1.6.3)
+r,energymgr,pump_operation,Pump Operation Mode,,18,2001,c32a,,,low_high_modulating
+w,energymgr,pump_operation,Pump Operation Mode,,18,2020,c32a,,,low_high_modulating
+b,energymgr,pump_operation,Pump Operation Mode,13,18,2010,c32a,,m,low_high_modulating
+
+# Antifreeze circulator speed (1.6.4)
+# Update in Home Asistant disabled as is installation parameter
+r,energymgr,antifreeze_circulator_speed,Antifreeze HP circulator Control,,18,2001,c58f,,,low_med_high
+w,ignored,antifreeze_circulator_speed,Antifreeze HP circulator Control,,18,2020,c58f,,,low_med_high
+b,energymgr,antifreeze_circulator_speed,Antifreeze HP circulator Control,13,18,2010,c58f,,m,low_med_high
+
+############################################################################################
+####                             MANUAL MODE   MESSAGES                                 ####
+############################################################################################
+
+# Manual activation of the system components (circulation pumps diverter valves heating elements etc.) (1.10.0) and (1.11.0)
+r,energymgr,manual_mode,,,18,2001,00f3,,,onoff
+
+# HP circulator control (1.10.1)
+r,energymgr,manual_mode_hp_circulator_control,,,18,2001,cf2a,,,off_low_high
+
+# Diverter valve control (1.10.2)
+r,energymgr,manual_mode_diverter_valve_control,,,18,2001,01f3,,,valve_dhw_heat
+
+# Diverter valve COOLING (1.10.3)
+r,energymgr,manual_mode_diverter_valve_cooling,,,18,2001,02f3,,,valve_heat_cool
+
+# Auxiliary circulator (1.10.4)
+r,energymgr,manual_mode_auxiliary_circulator,,,18,2001,03f3,,,onoff
+
+# All output AUX contact (1.10.8)
+r,energymgr,manual_mode_all_aux_output_contact,,,18,2001,0cf4,,,onoff
+
+# Anode output(1.10.9)
+r,energymgr,manual_mode_anode_output,,,18,2001,0df4,,,onoff
+
+# Activates the heat pump in heating mode (1.11.1)
+r,energymgr,manual_mode_hp_heating_on,,,18,2001,07f3,,,onoff
+
+# Activates the heat pump in cooling mode. (1.11.2)
+r,energymgr,manual_mode_force_hp_cool,,,18,2001,0ef4,,,onoff
+
+# Activates the heating element immersed in the calorifier in DHW mode (1.11.6)
+r,energymgr,manual_mode_tank_heater,,,18,2001,03f5,,,onoff
+
+
+############################################################################################
+# Test and Utilities - 
+############################################################################################
+
+# Activates the anti-lock function of the primary circulation pump. (1.12.1)
+# Update in Home Asistant disabled as is installation parameter
+r,energymgr,pump_antiblock,Pump Antiblock,,18,2001,1823,,,onoff
+w,ignored,pump_antiblock,Pump Antiblock,,18,2020,1823,,,onoff
+b,energymgr,pump_antiblock,Pump Antiblock,13,18,2010,1823,,m,onoff
+
+# Quiet Mode activation (1.12.2)
+r,energymgr,quiet_mode,silent mode,,18,2001,0320,,,onoff
+w,energymgr,quiet_mode,silent mode,,18,2020,0320,,,onoff
+b,energymgr,quiet_mode,silent mode,13,18,2010,0320,,m,onoff
+
+# Quiet mode start time (1.12.3)
+r,energymgr,quiet_mode_start_time,start time,,18,2000,692b,,,ignore_1;hhmm
+w,energymgr,quiet_mode_start_time,start time,,18,2020,692b,,,hhmm
+b,energymgr,quiet_mode_start_time,start time,13,18,2010,692b,,m,ignore_1;hhmm
+r,energymgr,quiet_mode_start_time_limits,start time,,18,2001,692b,,,hhmm_min_max
+
+# Quiet mode end time (1.12.4)
+r,energymgr,quiet_mode_end_time,end time,,18,2000,6a2b,,,ignore_1;hhmm
+w,energymgr,quiet_mode_end_time,end time,,18,2020,6a2b,,,hhmm
+b,energymgr,quiet_mode_end_time,end time,13,18,2010,6a2b,,m,ignore_1;hhmm
+r,energymgr,quiet_mode_end_time_limits,end time,,18,2001,6a2b,,,hhmm_min_max
+
+# Exogel kit activation (1.12.9)
+# Update in Home Asistant disabled as is installation parameter
+r,energymgr,exogel_kit_activation,Exogel Kit Activation,,18,2001,1f88,,,onoff
+w,ignored,exogel_kit_activation,Exogel Kit Activation,,18,2020,1f88,,,onoff
+b,energymgr,exogel_kit_activation,Exogel Kit Activation,13,18,2010,1f88,,m,onoff
+
+############################################################################################
+#Menu - ENERGY MANAGER STATISTICS
+############################################################################################
+
+# Heating running hours (h/10) (1.14.1)
+r,energymgr,heatpump_heating_op_hours,Heatpump Heating Operating Hours,,18,2000,55d1,,,ignore_1;hours
+
+# DHW running hours (h/10) (1.14.2)
+r,energymgr,heatpump_dhw_op_hours,Heatpump DHW Operating Hours,,18,2000,56d1,,,ignore_1;hours
+
+############################################################################################
+# Energy Manager diagnostics
+############################################################################################
+
+# Energy Manager status (1.16.0)
+# This command is issued when using the panel
+r,ignoed,energymgr_status_3,Energy Manager Status,,18,2001,c94b,,,energymgr_status
+# This command is is issued every 10 seconds so the best way to get the energymgr status
+r,energymgr,energymgr_status,Energy Manager Status,,18,2000,c94bd1404bfd4cfd,,,ignore_1;energymgr_status:status;percent:value_d140;longminutes:value_4bfd;longminutes:value_4cfd
+# This command is issued less frequently so not as good to use for uptodate status
+r,ignored,energymgr_status_2,Energy Manager Status,,18,2000,c94b,,,ignore_1;energymgr_status
+
+# Hydraulic scheme diagnostic (1.16.1)
+r,energymgr,hydraulic_scheme_diagnostic,,,18,2001,d4f7,,,hydraulic_diagnostic
+
+#Current Status of Room Thermostat 1 (1.17.0)
+r,energymgr,room_thermostat_1,,,18,2001,011f,,,onoff
+
+#Current Status of Room Thermostat 2 (1.17.1)
+r,energymgr,room_thermostat_2,,,18,2001,021f,,,onoff
+
+# Current Status of AUX Input 1 (1.17.2)
+r1,energymgr,aux_input_1_status,AUX Input 1 state - for PV,,18,2001,1e11,,,onoff
+
+# Current Status of AUX Input 2 (1.17.3)
+r,energymgr,aux_input_2_status,AUX Input 2 state - bridged,,18,2001,1f11,,,onoff
+
+# Current Status of HV Input 1 (1.17.4)
+r,energymgr,hv_input_1_status,HV Input 1 State - not used,,18,2001,1c11,,,onoff
+
+# Current Status of HV Input 2 (1.17.5)
+r,energymgr,hv_input_2_status,HV Input 2 State - not used,,18,2001,1d11,,,onoff
+r,ignored,hv_input_2_status_panel,HV Input 2 State - not used,,18,2000,1d11,,,ignore_1;onoff
+
+# Main circulator status (1.18.0)
+r,energymgr,main_circulator,Main Curculator State,,18,2001,c200,,,onoff
+
+# Tank Electric Heater (1.18.1)
+r,energymgr,tank_electric_heater,Tank Electric Heater,,18,2001,d8f8,,,onoff
+
+# HC Pump 2 (1.18.2)
+r,energymgr,hc_pump_2,HC Pump 2,,18,2001,c700,,,onoff
+
+# Current state of the DHW/heating diverter valve (1.18.3)
+r,energymgr,diverter_valve,Diverter Valve Control,,18,2001,0601,,,valve_dhw_heat
+
+# Current state of the heating/cooling diverter valve (1.18.4)
+r,energymgr,diverter_valve_cooling,Diverter Valve COOLING,,18,2001,0701,,,valve_heat_cool
+
+# Current Status of AUX Output 1 (1.18.8)
+r1,energymgr,aux_output_1_status,AUX Output 1 state - for DHW boost,,18,2001,1803,,,onoff
+
+# Current Status of AUX Output 2 (1.18.9)
+r,energymgr,aux_output_2_status,AUX Output 2 state - not used,,18,2001,1A03,,,onoff
+
+r,energymgr,anode_output,If Installed,,18,2001,1903,,,onoff
+r,ignored,anode_output_panel,If Installed,,18,2000,1903,,,ignore_1;onoff
+
+############################################################################################
+# System Integration
+############################################################################################
+
+# Activates the Opentherm gateway (1.20.3)
+# Update in Home Asistant disabled as not relevant on my system
+r,energymgr,opentherm_gateway,Opentherm Gateway Activation,,18,2001,008f,,,onoff
+w,ignored,opentherm_gateway,Opentherm Gateway Activation,,18,2020,008f,,,onoff
+b,energymgr,opentherm_gateway,Opentherm Gateway Activation,13,18,2010,008f,,m,onoff
+
+# Issued regularly on the system
+r1,energymgr,external_temp,External Sensor Temperature,,fe,2000,7647
+b,energymgr,external_temp,External Sensor Temperature,13,fe,200f,7647,,,temperature:reading
+b,ignored,external_temp_bcast,External Sensor Temperature,13,fe,2010,7647,,,temperature:reading
+b,ignored,external_temp_bcast_alt,External Sensor Temperature,13,fe,2010,6f17,,,temperature:reading
+
+############################################################################################
+####                        ENERGY CALCULATION MESSAGES                                 ####
+############################################################################################
+
+# Define if the S0 input is used or not (1.24.0)
+r,ignored,pulse_unit,,,18,2001,d08e,,,pulse_unit
+
+# Energy pulse value number (1.24.1)
+r,ignored,pulse_value_number,,,18,2001,4b8e,,,longminutes_min_max
+
+# The multiplication of Energy pulse value factor and the Energy pulse measuring type gives the number of pulses representing an energy consumption of 1 kWh. (1.24.2)
+r,ignored,pulse_value_factor,,,18,2001,d58e,,,pulse_value_factor
+
+# Defines if the S0 input signals measures the HP consumption (0) or the sum HP and resistors consumption (1). (1.24.3)
+r,ignored,pulse_measuring_type,,,18,2001,d68e,,,pulse_measuring_type
+
+# Tank electric heaters nominal power consumption (1.24.5)
+r,ignored,electric_heater_efficiency,,,18,2001,d88e,,,percent_min_max
+
+# Tank electric heaters nominal efficiency (1.24.7)
+r,ignored,heater_nominal_power,,,18,2001,d28e,,,kwshort_min_max
+
+############################################################################################
+####                        HOLIDAY MODE MESSAGES                                       ####
+############################################################################################
+
+b,energymgr,holiday_status,holiday status,,fe,2071,,,,holiday_status:status;hhmm:end_time;date:end_date
+w,energymgr,holiday_status,holiday status,,fe,2071,,,,holiday_status:status;hhmm:end_time;date:end_date
+
+############################################################################################
+####                        Cost related Messages                                       ####
+############################################################################################
+
+#Menu - Hybrid System - Energy Tariffs - Read and Write Commands
+r,energymgr,electric_cost,statistics,,18,2000,652b,,,ignore_1;cost
+w,energymgr,electric_cost,statistics,,18,2020,652b,,,cost
+
+r,energymgr,pv_electric_cost,statistics,,18,2000,662b,,,ignore_1;cost
+w,energymgr,pv_electric_cost,statistics,,18,2020,662b,,,cost
+
+r,energymgr,heatpump_calculated_cost,Heatpump Current Calculated Cost,,18,2000,6c47,,,ignore_1;cost
+r,energymgr,heatpump_estimated_cost,Heatpump Current Estimated Cost,,18,2000,6d47,,,ignore_1;cost
+
+############################################################################################
+####                        Other  Messages                                       ####
+############################################################################################
+
+r,energymgr,input_states,statistics,,18,2000,1d11d4f7,,,ignore_1;onoff:hv_input_1_state;hydraulic_diagnostic:hydraulic_diagnostic
+
+#b,energymgr,return_temperature,statistics,13,fe,2010,769e,,,temperature:reading - buffer low temperature sensor
